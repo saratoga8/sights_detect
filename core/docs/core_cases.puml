@@ -1,0 +1,9 @@
+@startuml
+actor UI
+rectangle core {
+  UI - (Controller)
+  (Controller) ..> (Data)
+  (Controller) ..> (FileOps)
+  (Controller) ..> (ObjsDetect)
+}
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+Actor User #green
+participant Controller as C
+participant PicsFinder as PF
+participant ObjectsFinder as OF
+participant LandMark as LM
+User -> C: detectIn(Path dirs[])
+activate C
+loop dirs times
+C -> PF **: new PicsFinder(Path dir)
+C -> PF: findPics
+activate PF
+C <-- PF: path[]
+deactivate PF
+destroy PF
+C -> C: updateFoundPics
+end
+
+loop foundPics times
+C -> OF **: new ObjectsFinder(Path path)
+C -> OF: findLandmark
+activate OF
+OF -> LM **: new LandMark
+OF <-- LM: landMark
+C <-- OF: landMark
+deactivate OF
+destroy OF
+C -> C: updateFoundLandMarks
+end
+
+User <-- C: Hash{path, LandMark}
+
+User -> C: picsNum
+User <-- C: int
+
+deactivate C
+@enduml

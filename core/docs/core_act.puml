@@ -1,0 +1,25 @@
+@startuml
+(*)  --> "select dir/dirs"
+--> Get sub-dirs
+--> ===B1===
+--> "Search pics in Sub-dir 1"
+If "Found pic is in pics list?" then
+--> [No] "Detect sights"
+--> "add result to list of pics"
+--> ===B2===
+else
+Endif
+--> ===B2===
+
+===B1=== --> "Search pics in Sub-dir 2"
+If "Found pic is in pics list?" then
+--> [No] "Detect sights"
+--> "add result to list of pics"
+else
+Endif
+--> ===B2===
+
+===B1=== --> "Observe files list"
+--> ===B2===
+-->(*)
+@enduml

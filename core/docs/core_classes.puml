@@ -1,0 +1,103 @@
+@startuml
+
+abstract class Controller {
+  -descriptions
+  {abstract}+start()
+  {abstract}+stop()
+  +getStatistics()
+  +getDetections()
+  +detectIn()
+}
+
+class MobileController {
+  {static} -instance
+  -MobileController()
+  {static} +getInstance()
+  +start()
+  +stop()
+}
+
+class DesktopController {
+  {static} -instance
+  -DesktopController()
+  {static} +getInstance()
+  +start()
+  +stop()
+}
+
+
+class Detection {
+  -path
+  -descriptions
+  -state
+}
+
+
+Controller o- "0..*" Detection
+Detection *- DETECTION
+Seeker o..> "1" Detection
+Controller o..> "1..*" Seeker
+Seeker <|.. PicsSeeker
+
+enum DETECTION {
+   PROCESSING
+   NO
+   FOUND
+   UNKNOWN
+}
+
+interface Seeker {
+  {abstract} +find()
+  {abstract} +stop()
+}
+
+interface PicsSeeker {
+  {static}-picFormats
+  {abstract} +find()
+  {abstract} +stop()
+}
+
+
+Controller <|.. MobileController
+Controller <|.. DesktopController
+PicsSeeker <|.. DesktopFS
+PicsSeeker <|.. MobileFS
+PicsSeeker <|.. CloudFS
+CloudService <|.. CloudFS
+
+class DesktopFS {
+   +find()
+   +stop()
+}
+
+class MobileFS {
+   +find()
+   +stop()
+}
+
+class CloudFS {
+   +find()
+   +stop()
+}
+
+
+Seeker <|.. LandMarkSeeker
+LandMarkSeeker <|.. GoogleObjSeeker
+CloudService <|.. GoogleObjSeeker
+
+interface LandMarkSeeker {
+   {abstract} +find()
+   {abstract} +stop()
+}
+
+class GoogleObjSeeker {
+   +find()
+   +stop()
+}
+
+
+interface CloudService {
+  {abstract} +isConnected()
+}
+
+@enduml

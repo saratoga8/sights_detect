@@ -1,0 +1,8 @@
+@startuml
+   [FileOps]
+   Statistics - [Controller]
+   Control - [Controller]
+   Paths - [Controller]
+   [Controller] ..> [FileOps] : paths/stop/start
+   [Controller] ..> [ObjsDetect]:path/start/stop
+@enduml

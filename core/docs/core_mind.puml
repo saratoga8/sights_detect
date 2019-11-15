@@ -1,0 +1,25 @@
+@startmindmap
++ Sights Detection core
+++ Desktop
++++ Files find
+++++ Local
+++++ Cloud
+++++ Events detection
+++++ Statistics
+++++ Scan Stop/Resume
+++++ Parallel
+++++ Results DataStruct
++++ Detection lib
+++++ JSON
+++++ Parallel
+++++ Java
+++++ Google
+++++ Pics->Txt convert
+++++ Statistics
+-- Mobile
+--- WiFi
+--- Background
+--- Battery
+--- Kotlin
+
+@endmindmap

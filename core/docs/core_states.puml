@@ -1,0 +1,22 @@
+@startuml
+scale 350 width
+[*] --> FilesSearch : dirs
+FilesSearch --> [*] : no pics found
+
+state FilesSearch {
+  [*] --> SearchPics : dir
+  SearchPics --> ObjectDetection : pics
+
+}
+
+state ObjectDetection {
+  [*] --> ObjectSearch : pic
+  ObjectSearch --> UpdateData : pic:data
+}
+
+state UpdateData {
+}
+
+UpdateData --> [*]
+
+@enduml
