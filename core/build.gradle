@@ -8,7 +8,9 @@ ext {
 }
 dependencies {
     compile 'com.google.cloud:google-cloud-vision:1.82.0'
-    testCompile 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
+//    testCompile 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
+    testRuntimeOnly'org.junit.jupiter:junit-jupiter-engine:5.5.1'
+    testImplementation'org.junit.jupiter:junit-jupiter-api:5.5.1'
     testCompile 'org.junit.jupiter:junit-jupiter-params:5.5.1'
     testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.0.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib'
@@ -20,6 +22,9 @@ dependencies {
 test {
     testLogging {
         showStandardStreams = true
+    }
+    reports {
+        html.enabled = true
     }
 //    systemProperty 'java.util.logging.config.file', 'build/resources/main/logging.properties'
     environment 'GOOGLE_APPLICATION_CREDENTIALS', 'src/main/resources/account_key.json'

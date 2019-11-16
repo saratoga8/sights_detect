@@ -1,8 +1,6 @@
 package com.sights_detect.core.seekers
 
-import com.sights_detect.core.detections.Detection
-
-interface Seeker {
-	fun find(): List<Detection>
+interface Seeker<T> {
+	fun find(): List<T>
 	fun stop() {}
 }

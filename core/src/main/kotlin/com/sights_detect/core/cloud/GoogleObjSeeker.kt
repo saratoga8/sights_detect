@@ -11,7 +11,7 @@ import java.io.FileInputStream
 import java.io.IOException
 
 
-class GoogleObjSeeker(private val path: String): Seeker, Logging {
+class GoogleObjSeeker(private val path: String): Seeker<Detection>, Logging {
 
 	private fun detectLandmarks(path: String): List<EntityAnnotation> {
 		val requests: List<AnnotateImageRequest> = getAnnotateImgRequests(path)

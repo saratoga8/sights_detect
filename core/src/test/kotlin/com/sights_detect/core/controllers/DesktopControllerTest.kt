@@ -1,7 +1,9 @@
 package com.sights_detect.core.controllers
 
 
+import com.sights_detect.core.detections.Detection
 import com.sights_detect.core.detections.Detections
+import com.sights_detect.core.detections.DetectionsStorage
 import org.junit.jupiter.api.*
 import java.io.File
 import java.io.IOException
@@ -28,7 +30,7 @@ internal class DesktopControllerTest {
 
 	@DisplayName("No sub-dirs")
 	@Test
-	fun noSubDirs() {
+	internal fun noSubDirs() {
 		try {
 			createTempFile( "test", ".jpg", File(rootPath))
 			createTempFile( "test2", ".jpg", File(rootPath))
@@ -50,7 +52,7 @@ internal class DesktopControllerTest {
 
 	@DisplayName("1 sub-dir")
 	@Test
-	fun subDir() {
+	internal fun subDir() {
 		try {
 			val subDir = createTempDir(rootPath + File.separator + "dir1")
 			Assertions.assertTrue(subDir.exists(), "Temp dir hasn't created")
@@ -75,7 +77,7 @@ internal class DesktopControllerTest {
 
 	@DisplayName("2 sub-dir and one empty")
 	@Test
-	fun subDirs() {
+	internal fun subDirs() {
 		try {
 			val subDirs = arrayOf(rootPath + File.separator + "dir1", rootPath + File.separator + "dir2")
 			subDirs.forEach { path ->
@@ -104,7 +106,7 @@ internal class DesktopControllerTest {
 
 	@DisplayName("Save detections")
 	@Test
-	fun saveDetections() {
+	internal fun saveDetections() {
 		try {
 			val subDirs = arrayOf(rootPath + File.separator + "dir1", rootPath + File.separator + "dir2")
 			subDirs.forEach { path ->
@@ -117,6 +119,7 @@ internal class DesktopControllerTest {
 			Assertions.assertTrue(createTempDir(rootPath + File.separator + "empty").exists(), "Empty temp dir hasn't created")
 
 			class TestController : DesktopController(subDirs.asList()) {
+				override val storage = DetectionsStorage<Map<String, Detection>>(rootPath + File.separator + "detections.json")
 				public fun test() {
 					start()
 					val expected = detections
@@ -131,6 +134,22 @@ internal class DesktopControllerTest {
 				}
 			}
 			TestController().test()
+		} catch (e: Exception) {
+			fail("Test aborted: ${e.toString()}")
+		}
+	}
+
+	@DisplayName("Try to load detections from invalid path")
+	@Test
+	internal fun loadDetectionsInvalidPath() {
+		try {
+			class TestController : DesktopController(listOf()) {
+				override val storage = DetectionsStorage<Map<String, Detection>>(rootPath + File.separator + "bla-bla.json")
+				public fun test() {
+					loadDetections()
+					Assertions.assertTrue(detections.isEmpty(), "Shouldn't be any detections")
+				}
+			}
 		} catch (e: Exception) {
 			fail("Test aborted: ${e.toString()}")
 		}

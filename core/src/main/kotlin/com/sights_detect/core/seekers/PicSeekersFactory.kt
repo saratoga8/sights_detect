@@ -1,9 +1,10 @@
 package com.sights_detect.core.seekers
 
+import com.sights_detect.core.detections.Detection
 import java.io.File
 
 object PicSeekersFactory {
-	fun getPicSeekers(path: String): List<Seeker> {
+	fun getPicSeekers(path: String): List<Seeker<Detection>> {
 		val dir = File(path)
 		require(dir.exists()) { "The given path $path doesn't exist" }
 		require(dir.isDirectory) { "The given path $path isn't directory" }

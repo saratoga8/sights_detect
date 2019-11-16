@@ -19,11 +19,15 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	}
 
 	protected open fun findNewPics(): List<Detection> {
-		val picSeekers: MutableSet<Seeker> = mutableSetOf()
-		paths.forEach { path -> picSeekers.addAll(PicSeekersFactory.getPicSeekers(path.toString())) }
 		val founds = mutableListOf<Detection>()
-		picSeekers.forEach { seeker -> founds.addAll(seeker.find()) }
+		buildPicSeekers().forEach { seeker -> founds.addAll(seeker.find()) }
 		return founds
+	}
+
+	private fun buildPicSeekers(): Set<Seeker<Detection>> {
+		val picSeekers: MutableSet<Seeker<Detection>> = mutableSetOf()
+		paths.forEach { path -> picSeekers.addAll(PicSeekersFactory.getPicSeekers(path.toString())) }
+		return picSeekers
 	}
 
 	protected fun saveDetections() = storage.save(detections, type)
