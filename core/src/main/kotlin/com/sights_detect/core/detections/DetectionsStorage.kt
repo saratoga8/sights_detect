@@ -11,7 +11,7 @@ import java.io.IOException
 import java.lang.reflect.Type
 
 class DetectionsStorage<T>(private val path: String = "detections.json"): Logging {
-	public fun save(detections: T, type: Type) {
+	fun save(detections: T, type: Type) {
 		logger.debug("Saving detections in ${File(path).absolutePath}")
 		exec {
 			FileWriter(path).use { writer ->
@@ -25,7 +25,7 @@ class DetectionsStorage<T>(private val path: String = "detections.json"): Loggin
 //		}
 	}
 
-	public fun load(type: Type): T? {
+	fun load(type: Type): T? {
 		logger.debug("Loading detections from ${File(path).absolutePath}")
 		return exec {
 			FileReader(path).use { reader ->

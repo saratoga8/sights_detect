@@ -1,6 +1,7 @@
 package com.sights_detect.core.cloud
 
 import com.sights_detect.core.detections.Detections
+import com.sights_detect.core.seekers.GoogleObjSeeker
 import org.apache.http.util.TextUtils
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
@@ -36,6 +37,7 @@ internal class GoogleObjSeekerTest {
 		File(rootPath).walk().forEach { it.deleteRecursively() }
 		Assertions.assertFalse(File(rootPath).exists(), "Temp directory $rootPath still exists")
 	}
+
 
 	@DisplayName("Detect landmark with 2 descriptions")
 	@ParameterizedTest

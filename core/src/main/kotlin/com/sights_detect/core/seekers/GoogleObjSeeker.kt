@@ -1,10 +1,9 @@
-package com.sights_detect.core.cloud
+package com.sights_detect.core.seekers
 
 import com.google.cloud.vision.v1.*
 import com.google.protobuf.ByteString
 import com.sights_detect.core.detections.Detection
 import com.sights_detect.core.detections.Detections
-import com.sights_detect.core.seekers.Seeker
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.File
 import java.io.FileInputStream

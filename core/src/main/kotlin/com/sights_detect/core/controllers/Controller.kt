@@ -5,26 +5,31 @@ import com.sights_detect.core.detections.Detection
 import com.sights_detect.core.detections.DetectionsStorage
 import com.sights_detect.core.seekers.PicSeekersFactory
 import com.sights_detect.core.seekers.Seeker
+import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.Logging
 import java.lang.reflect.Type
+import java.util.*
 
 
 abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
-	var detections: MutableMap<String, Detection> = mutableMapOf()
-	protected abstract val storage: DetectionsStorage<Map<String, Detection>>
-	private val type: Type = object : TypeToken<Map<String, Detection>>() {}.type
+	var detections: Hashtable<String, Detection> = Hashtable()
+		private set
+	protected abstract val storage: DetectionsStorage<Hashtable<String, Detection>>
+	private val type: Type = object : TypeToken<Hashtable<String, Detection>>() {}.type
 
-	public fun start() {
-		findNewPics().forEach { found -> detections.putIfAbsent(found.path, found) }
+	fun start() {
+		GlobalScope.launch {
+			findNewPics().forEach() { found -> detections.putIfAbsent(found.path, found) }
+		}
 	}
 
-	protected open fun findNewPics(): List<Detection> {
+	protected open suspend fun findNewPics(): List<Detection> {
 		val founds = mutableListOf<Detection>()
-		buildPicSeekers().forEach { seeker -> founds.addAll(seeker.find()) }
+		buildPicSeekers().forEach { seeker -> CoroutineScope(Dispatchers.IO).async { founds.addAll(seeker.find()) } }
 		return founds
 	}
 
-	private fun buildPicSeekers(): Set<Seeker<Detection>> {
+	protected open fun buildPicSeekers(): Set<Seeker<Detection>> {
 		val picSeekers: MutableSet<Seeker<Detection>> = mutableSetOf()
 		paths.forEach { path -> picSeekers.addAll(PicSeekersFactory.getPicSeekers(path.toString())) }
 		return picSeekers
@@ -32,6 +37,8 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 
 	protected fun saveDetections() = storage.save(detections, type)
 	protected fun loadDetections() {
-		detections = storage.load(type)?.toMutableMap() ?: return
+		val loaded = storage.load(type)
+		if(loaded != null)
+			detections = loaded
 	}
 }

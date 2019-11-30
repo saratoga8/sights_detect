@@ -1,5 +1,6 @@
 package com.sights_detect.core.seekers
 
+import kotlinx.coroutines.*
 import org.junit.jupiter.api.*
 import java.io.File
 import java.io.IOException
@@ -32,8 +33,8 @@ internal class DesktopFSTest {
 		Assertions.assertTrue(DesktopFS(rootPath).find().isEmpty(), "In an empty directory shouldn't be pics files")
 	}
 
-	@DisplayName("Find pics in current dir")
 	@Test
+	@DisplayName("Find pics in current dir")
 	internal fun find2() {
 		try {
 			createTempFile( "test", ".jpg", File(rootPath))
@@ -46,8 +47,8 @@ internal class DesktopFSTest {
 		}
 	}
 
-	@DisplayName("Find pics in sub dirs")
 	@Test
+	@DisplayName("Find pics in sub dirs")
 	internal fun find3() {
 		try {
 			val subPath: String = rootPath + File.separator + "sub"
@@ -91,5 +92,21 @@ internal class DesktopFSTest {
 			return
 		}
 		AssertionError("Should be thrown exception")
+	}
+
+	private suspend fun foo(str: String) = CoroutineScope(Dispatchers.IO).async {
+		delay(3000L)
+		println(str)
+	}
+
+	@Test
+	internal fun checkCoroutine() {
+		GlobalScope.launch {
+			foo("one").await()
+			 foo("two")
+			 foo("three")
+		}
+		println("here")
+		Thread.sleep(7000L)
 	}
 }
