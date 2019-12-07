@@ -42,14 +42,16 @@ internal class GoogleObjSeekerTest {
 	@DisplayName("Detect landmark with 2 descriptions")
 	@ParameterizedTest
 	@CsvSource("https://cloud.google.com/vision/images/rushmore.jpg, Mount Rushmore National Memorial, Mount Rushmore")
-	internal fun detectMultipleDescriptions(url: String, description1: String?, description2: String?) {
+	internal fun detectMultipleDescriptions(url: String, description1: String, description2: String) {
 		try {
 			val downloadedFile = downloadPic(url)
 			val found = GoogleObjSeeker(downloadedFile.absolutePath).find()
 			Assertions.assertEquals(1, found.size, "There should be only one detection")
 			val detection = found[0]
-			assert(detection.toString().endsWith(java.lang.String.format("%s; [%s, %s]; FOUND", picFile, description1, description2)))
-			Assertions.assertEquals(Detections.FOUND, detection.state)
+			Assertions.assertEquals(downloadedFile.absolutePath, detection.path, "Invalid path of detection")
+			Assertions.assertTrue(description1 in detection.toString(), "Description $description1 hasn't found in ${detection.toString()}")
+			Assertions.assertTrue(description2 in detection.toString(), "Description $description2 hasn't found in ${detection.toString()}")
+			Assertions.assertEquals(Detections.FOUND, detection.state, "Invalid detection state")
 		} catch (e: IOException) {
 			fail("Cant't download the file " + url + " to the temp dir: " + e.message)
 		}
