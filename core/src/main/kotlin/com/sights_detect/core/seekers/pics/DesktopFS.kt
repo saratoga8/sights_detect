@@ -1,4 +1,4 @@
-package com.sights_detect.core.seekers
+package com.sights_detect.core.seekers.pics
 
 import com.sights_detect.core.detections.Detection
 import java.io.File

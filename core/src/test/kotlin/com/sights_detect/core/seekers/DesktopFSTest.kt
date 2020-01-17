@@ -1,5 +1,6 @@
 package com.sights_detect.core.seekers
 
+import com.sights_detect.core.seekers.pics.DesktopFS
 import kotlinx.coroutines.*
 import org.junit.jupiter.api.*
 import java.io.File
@@ -106,7 +107,6 @@ internal class DesktopFSTest {
 			 foo("two")
 			 foo("three")
 		}
-		println("here")
 		Thread.sleep(7000L)
 	}
 }

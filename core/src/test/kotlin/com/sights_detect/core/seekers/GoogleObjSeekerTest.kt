@@ -1,8 +1,7 @@
-package com.sights_detect.core.cloud
+package com.sights_detect.core.seekers
 
 import com.sights_detect.core.detections.Detections
-import com.sights_detect.core.seekers.GoogleObjSeeker
-import org.apache.http.util.TextUtils
+import com.sights_detect.core.seekers.objects.google.GoogleObjSeeker
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -23,9 +22,9 @@ internal class GoogleObjSeekerTest {
 	@BeforeEach
 	fun setUp() {
 		try {
-			val keyPath: String = System.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-			Assertions.assertFalse(TextUtils.isEmpty(keyPath), "No env var GOOGLE_APPLICATION_CREDENTIALS")
-			Assertions.assertTrue(File(keyPath).exists(), "The file with google's account key $keyPath doesn't exist")
+//			val keyPath: String = System.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+//			Assertions.assertFalse(TextUtils.isEmpty(keyPath), "No env var GOOGLE_APPLICATION_CREDENTIALS")
+//			Assertions.assertTrue(File(keyPath).exists(), "The file with google's account key $keyPath doesn't exist")
 			rootPath = createTempDir("tests").absolutePath
 		} catch (e: IOException) {
 			fail("Cant't create temp dir: " + e.message)

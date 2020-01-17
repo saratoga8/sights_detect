@@ -3,8 +3,8 @@ package com.sights_detect.core.controllers
 import com.google.gson.reflect.TypeToken
 import com.sights_detect.core.detections.Detection
 import com.sights_detect.core.detections.DetectionsStorage
-import com.sights_detect.core.seekers.PicSeekersFactory
 import com.sights_detect.core.seekers.Seeker
+import com.sights_detect.core.seekers.pics.PicSeekersFactory
 import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.Logging
 import java.lang.reflect.Type

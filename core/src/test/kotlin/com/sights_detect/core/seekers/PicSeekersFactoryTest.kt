@@ -1,5 +1,6 @@
 package com.sights_detect.core.seekers
 
+import com.sights_detect.core.seekers.pics.PicSeekersFactory
 import org.junit.jupiter.api.*
 import java.io.File
 import java.io.IOException
