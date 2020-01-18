@@ -4,9 +4,9 @@
 # Ignore Gradle build output directory
 build
 .idea
-core/src/main/resources/google.properties
 *.iml
 core/out/
 gradle/
 gradlew
 local.properties
+/core/src/main/resources/google.properties
