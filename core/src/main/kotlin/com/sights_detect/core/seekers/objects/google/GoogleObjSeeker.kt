@@ -7,6 +7,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.GsonSerializer
 import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
@@ -14,29 +15,51 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.File
+import java.io.FileInputStream
+import java.util.*
 
 
 class GoogleObjSeeker(private val path: String): ObjectSeeker, Logging {
+	private val properties: Properties = Properties()
+
+	init {
+		val fileName = "google.properties"
+		val url = javaClass.classLoader.getResource(fileName)
+		if (url != null) {
+			properties.load(FileInputStream(url.path))
+		}
+		else
+			logger.error("Can't find resources/$fileName")
+	}
+
+
 	override fun find(): List<Detection> {
-		if (File(path).exists()) {
-			val client = getClient()
-			val response = runBlocking { doRequest(client) }
-			client.close()
-			return listOf(createDetections(response))
-		} else logger.warn( "File of picture $path DOESN'T exist")
+		if (properties.isNotEmpty()) {
+			if (File(path).exists()) {
+				val client = getClient()
+				val response = runBlocking { doRequest(client) }
+				client.close()
+				return listOf(createDetections(response))
+			} else logger.warn( "File of picture $path DOESN'T exist")
+		} else logger.error("Google Cloud Vision API info from properties file hasn't loaded")
 		return listOf()
 	}
 
+
 	private suspend fun doRequest(client: HttpClient): GoogleResponse {
 		return client.post<GoogleResponse> {
-			url {
-				host = "vision.googleapis.com"
-				path("v1/images:annotate")
-				parameters.append("key", "AIzaSyAJkP7gXXuNijeRy7OugpBozZoQ7dfVeQo")  // TODO should be saved in local file!
-				protocol = URLProtocol.HTTPS
-			}
+			buildURL()
 			contentType(ContentType.Application.Json)
 			body = RequestBuilder.build(path)
+		}
+	}
+
+	private fun HttpRequestBuilder.buildURL() {
+		url {
+			host = properties.getProperty("host")
+			path(properties.getProperty("path"))
+			parameters.append("key", properties.getProperty("key"))
+			protocol = URLProtocol.HTTPS
 		}
 	}
 
