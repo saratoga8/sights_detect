@@ -167,12 +167,14 @@ class DesktopControllerTest {
 	}
 
 	@Test
-	@DisplayName("Parallel run")
+	@DisplayName("Parallel run of pics seeker")
 	fun parallelRun() {
+		val seekerRunTime = 3000L
+		val sleepTime = 4000L
+		val delta = 500
 		class TestSeeker: Seeker<Detection> {
 			override fun find(): List<Detection> {
-				Thread.sleep(3000)
-				println("Run")
+				Thread.sleep(seekerRunTime)
 				return listOf()
 			}
 		}
@@ -183,8 +185,12 @@ class DesktopControllerTest {
 			}
 
 			fun test() {
+				val startTime = System.currentTimeMillis()
 				start()
-				Thread.sleep(4000)
+				Thread.sleep(sleepTime)
+				val endTime = System.currentTimeMillis()
+				val totalRunTime = endTime - startTime
+				Assertions.assertTrue((totalRunTime - sleepTime) <= delta, "Total run time is $totalRunTime > (sleep time $sleepTime + delta $delta)")
 			}
 		}
 
