@@ -50,7 +50,7 @@ class GoogleObjSeeker(private val path: String): ObjectSeeker, Logging {
 		return client.post<GoogleResponse> {
 			buildURL()
 			contentType(ContentType.Application.Json)
-			body = RequestBuilder.build(path)
+			body = GoogleRequestBuilder().build(path)
 		}
 	}
 
