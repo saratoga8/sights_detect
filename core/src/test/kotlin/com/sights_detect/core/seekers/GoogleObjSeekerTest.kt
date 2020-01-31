@@ -66,8 +66,8 @@ internal class GoogleObjSeekerTest {
 			Assertions.assertEquals(1, found.size, "There should be only one detection")
 			Assertions.assertEquals("$downloadedFile; []; NO", found[0].toString(), "Image $url HAS landmark")
 			Assertions.assertEquals(Detections.NO, found[0].state)
-		} catch (e: IOException) {
-			Assertions.fail<Any?>("Cant't download the file $url to the temp dir: $e")
+		} catch (e: Exception) {
+			fail("Test aborted because of: $e")
 		}
 	}
 
@@ -78,7 +78,7 @@ internal class GoogleObjSeekerTest {
 			val found = GoogleObjSeeker("/sdfasdf/adsfasdf").find()
 			Assertions.assertTrue(found.isEmpty(), "There shouldn't be any founds")
 		} catch (e: Exception) {
-			Assertions.fail<Any?>("Test aborted because of: $e")
+			fail("Test aborted because of: $e")
 		}
 	}
 
