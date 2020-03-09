@@ -6,18 +6,20 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.GsonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
+import org.apache.logging.log4j.kotlin.Logging
 import java.util.*
 
-class Request(private val properties: Properties) {
+open class Request(private val properties: Properties): Logging {
 	private val client: HttpClient
 
 	init { client = getClient() }
 
-	private fun getClient(): HttpClient {
+	protected open fun getClient(): HttpClient {
 		return HttpClient(Apache) {
 			install(JsonFeature) {
 				serializer = GsonSerializer {
@@ -37,6 +39,7 @@ class Request(private val properties: Properties) {
 			buildURL()
 			contentType(ContentType.Application.Json)
 			body = bodyObj
+			header("Content-Encoding", "gzip")
 		}.also { client.close()	}
 	}
 

@@ -7,6 +7,7 @@ import com.sights_detect.core.seekers.Seeker
 import com.sights_detect.core.seekers.pics.PicSeekersFactory
 import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.Logging
+import java.lang.Thread.sleep
 import java.lang.reflect.Type
 import java.util.*
 
@@ -25,7 +26,7 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 
 	protected open suspend fun findNewPics(): List<Detection> {
 		val founds = mutableListOf<Detection>()
-		buildPicSeekers().forEach { seeker -> CoroutineScope(Dispatchers.IO).async { founds.addAll(seeker.find()) } }
+		buildPicSeekers().map { seeker -> CoroutineScope(Dispatchers.IO).async { founds.addAll(seeker.find()) } }.forEach { job -> job.await() }
 		return founds
 	}
 

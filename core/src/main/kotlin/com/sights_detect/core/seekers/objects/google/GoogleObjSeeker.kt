@@ -33,8 +33,6 @@ class GoogleObjSeeker(private val path: String): ObjectSeeker, Logging {
 		return listOf()
 	}
 
-
-
 	private fun createDetections(response: GoogleResponse): Detection {
 		val detection = Detection(path)
 		if (response != null) {

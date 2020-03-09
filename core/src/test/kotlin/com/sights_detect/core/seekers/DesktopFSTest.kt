@@ -50,7 +50,7 @@ internal class DesktopFSTest {
 
 	@Test
 	@DisplayName("Find pics in sub dirs")
-	internal fun find3() {
+	fun find3(): Unit = runBlocking {
 		try {
 			val subPath: String = rootPath + File.separator + "sub"
 			Assertions.assertFalse(File(subPath).exists(), "Sub directory shouldn't exist before creating")
@@ -63,6 +63,7 @@ internal class DesktopFSTest {
 		} catch (e: IOException) {
 			AssertionError("Cant't create temp file in dir " + rootPath + ": " + e.message)
 		}
+		Unit
 	}
 
 	@DisplayName("Invalid path")
@@ -93,20 +94,5 @@ internal class DesktopFSTest {
 			return
 		}
 		AssertionError("Should be thrown exception")
-	}
-
-	private suspend fun foo(str: String) = CoroutineScope(Dispatchers.IO).async {
-		delay(3000L)
-		println(str)
-	}
-
-	@Test
-	internal fun checkCoroutine() {
-		GlobalScope.launch {
-			foo("one").await()
-			 foo("two")
-			 foo("three")
-		}
-		Thread.sleep(7000L)
 	}
 }
