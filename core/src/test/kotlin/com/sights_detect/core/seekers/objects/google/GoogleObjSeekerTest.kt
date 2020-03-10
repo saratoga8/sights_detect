@@ -69,8 +69,8 @@ internal class GoogleObjSeekerTest {
 			Assertions.assertEquals(1, found.size, "There should be only one detection")
 			val detection = found[0]
 			Assertions.assertEquals(downloadedFile.absolutePath, detection.path, "Invalid path of detection")
-			Assertions.assertTrue(description1 in detection.toString(), "Description $description1 hasn't found in ${detection.toString()}")
-			Assertions.assertTrue(description2 in detection.toString(), "Description $description2 hasn't found in ${detection.toString()}")
+			Assertions.assertTrue(description1 in detection.toString(), "Description $description1 hasn't found in $detection")
+			Assertions.assertTrue(description2 in detection.toString(), "Description $description2 hasn't found in $detection")
 			Assertions.assertEquals(Detections.FOUND, detection.state, "Invalid detection state")
 		} catch (e: IOException) {
 			fail("Cant't download the file " + url + " to the temp dir: " + e.message)
@@ -80,10 +80,10 @@ internal class GoogleObjSeekerTest {
 	@ParameterizedTest
 	@DisplayName("No landmarks")
 	@ValueSource(strings = ["https://media.istockphoto.com/photos/slice-cucumber-in-squar-white-cup-on-wooden-table-picture-id640908364"])
-	fun noLandMarks(url: String) = runBlockingTest {
+	fun noLandMarks(url: String) {
 		try {
 			val downloadedFile = downloadPic(url)
-			val found = GoogleObjSeeker(downloadedFile.absolutePath, properties).find()
+			val found = runBlocking { GoogleObjSeeker(downloadedFile.absolutePath, properties).find() }
 			Assertions.assertEquals(1, found.size, "There should be only one detection")
 			Assertions.assertEquals("$downloadedFile; []; NO", found[0].toString(), "Image $url HAS landmark")
 			Assertions.assertEquals(Detections.NO, found[0].state)

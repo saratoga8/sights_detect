@@ -11,10 +11,6 @@ import java.util.*
 
 
 class GoogleObjSeeker(private val path: String, private val properties: Properties): ObjectSeeker, Logging {
-
-	init {
-	}
-
 	override fun find(): List<Detection> {
 		if (properties.isNotEmpty()) {
 			if (File(path).exists()) {
