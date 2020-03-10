@@ -10,17 +10,9 @@ import java.io.FileInputStream
 import java.util.*
 
 
-class GoogleObjSeeker(private val path: String): ObjectSeeker, Logging {
-	private val properties: Properties = Properties()
+class GoogleObjSeeker(private val path: String, private val properties: Properties): ObjectSeeker, Logging {
 
 	init {
-		val fileName = "google.properties"
-		val url = javaClass.classLoader.getResource(fileName)
-		if (url != null) {
-			properties.load(FileInputStream(url.path))
-		}
-		else
-			logger.error("Can't find resources/$fileName")
 	}
 
 	override fun find(): List<Detection> {

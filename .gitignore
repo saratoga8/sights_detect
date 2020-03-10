@@ -9,4 +9,4 @@ core/out/
 gradle/
 gradlew
 local.properties
-/core/src/main/resources/google.properties
+/core/src/test/resources/google.properties

@@ -11,13 +11,18 @@ import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
+import org.apache.http.util.TextUtils
 import org.apache.logging.log4j.kotlin.Logging
 import java.util.*
 
 open class Request(private val properties: Properties): Logging {
 	private val client: HttpClient
+	private val usedKeys = listOf<String>("host", "path", "key")
 
-	init { client = getClient() }
+	init {
+		checkProperties(properties, usedKeys)
+		client = getClient()
+	}
 
 	protected open fun getClient(): HttpClient {
 		return HttpClient(Apache) {
@@ -43,12 +48,16 @@ open class Request(private val properties: Properties): Logging {
 		}.also { client.close()	}
 	}
 
+	private fun checkProperties(properties: Properties, keys: List<String>) {
+		keys.forEach { key -> require(!properties.getProperty(key).isNullOrEmpty()) { "There is no '$key' key in properties" } }
+	}
+
 	 private fun HttpRequestBuilder.buildURL() {
-		url {
-			host = properties.getProperty("host")
-			path(properties.getProperty("path"))
-			parameters.append("key", properties.getProperty("key"))
-			protocol = URLProtocol.HTTPS
-		}
+		 url {
+			 host = properties.getProperty("host")
+			 path(properties.getProperty("path"))
+			 parameters.append("key", properties.getProperty("key"))
+			 protocol = URLProtocol.HTTPS
+		 }
 	}
 }
