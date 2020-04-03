@@ -5,11 +5,10 @@ import org.apache.logging.log4j.kotlin.Logging
 import java.io.File
 
 
-class DesktopFS(private val path: String, private val recursive: Boolean = true): PicsSeeker, Logging {
-	private val dirPath: String = path
+class DesktopFS(private val dirPath: String, private val recursive: Boolean = true): PicsSeeker, Logging {
 	init {
-		require(File(dirPath).exists())    { "The given path $path doesn't exist" }
-		require(File(dirPath).isDirectory) { "The given path $path isn't directory" }
+		require(File(dirPath).exists())    { "The given path $dirPath doesn't exist" }
+		require(File(dirPath).isDirectory) { "The given path $dirPath isn't directory" }
 	}
 
 	override fun find(): List<Detection> {

@@ -8,15 +8,11 @@ import java.io.File
 import java.util.*
 import kotlin.Exception
 
-open class GoogleVision(private val properties: Properties): Logging {
+open class GoogleVision(properties: Properties): Logging {
 	open val request = com.sights_detect.core.net.Request(properties)
 	var error = ""
 
 	suspend fun doRequest(imgPath: String): GoogleResponse {
-		if(properties == null) {
-			logger.error("The given properties instance is NULL")
-			return GoogleResponse(listOf())
-		}
 		return try {
 			request.post(buildRequest(imgPath))
 		}

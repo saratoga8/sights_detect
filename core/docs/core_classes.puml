@@ -9,23 +9,13 @@ abstract class Controller {
   +stop()
 }
 
-class MobileController {
-  {static} -instance
-  -MobileController()
-  {static} +getInstance()
-  +start()
-  +stop()
-}
-
 class DesktopController {
-  {static} -instance
-  -DesktopController()
+  -storage
   {static} +getInstance()
-  +start()
-  +stop()
 }
 
 class DetectionsStorage {
+   -path
    +save()
    +load()
 }
@@ -44,6 +34,14 @@ class Detection {
   +state
 }
 
+class Request {
+  -properties
+  +post()
+}
+
+class GoogleResponse {
+}
+
 Controller *- Properties
 Controller *- DetectionsStorage
 Controller *- "0..*" Detection
@@ -51,9 +49,33 @@ Controller o..> Detections
 Controller o..> "1..*" Seeker
 Controller ..> ObjectSeekerFactory
 Controller ..> PicSeekerFactory
+DesktopController ..> Properties
+DesktopController *- DetectionsStorage
+Request o..> GoogleResponse
 Detection *- Detections
 Seeker o..> "1" Detection
-Seeker <|.. PicsSeeker
+PicsSeeker ..> Detection
+PicSeekerFactory ..> DesktopFS
+PicSeekerFactory o..> "0..*" Seeker
+PicSeekerFactory ..> Detection
+PicSeekerFactory o..> "0..*" PicsSeeker
+DesktopFS o..> "0..*" Detection
+ObjectSeekerFactory ..> Properties
+ObjectSeekerFactory ..> Detection
+ObjectSeekerFactory o..> "0..*" Seeker
+ObjectSeekerFactory o..> "0..*" GoogleObjSeeker
+ObjectSeeker ..> Detection
+GoogleVision ..> Properties
+GoogleVision *- Request
+GoogleVision o..> GoogleRequest
+GoogleVision o..> GoogleResponse
+GoogleObjSeeker o..> "0..*" Detection
+GoogleObjSeeker *- Properties
+GoogleObjSeeker o..> GoogleVision
+GoogleObjSeeker o..> GoogleResponse
+GoogleObjSeeker ..> Detections
+
+interface ObjectSeeker { }
 
 enum Detections {
    PROCESSING
@@ -68,52 +90,35 @@ interface Seeker {
 }
 
 interface PicsSeeker {
-  {static}-picFormats
+  +picFormats
   {abstract} +find()
   {abstract} +stop()
 }
 
 
-Controller <|.. MobileController
 Controller <|.. DesktopController
 PicsSeeker <|.. DesktopFS
-PicsSeeker <|.. MobileFS
-PicsSeeker <|.. CloudFS
-CloudService <|.. CloudFS
+Seeker <|.. PicsSeeker
+ObjectSeeker ..|> Seeker
+ObjectSeeker <|.. GoogleObjSeeker
 
 class DesktopFS {
+   -dirPath
+   -recursive
    +find()
    +stop()
-}
-
-class MobileFS {
-   +find()
-   +stop()
-}
-
-class CloudFS {
-   +find()
-   +stop()
-}
-
-
-Seeker <|.. LandMarkSeeker
-LandMarkSeeker <|.. GoogleObjSeeker
-CloudService <|.. GoogleObjSeeker
-
-interface LandMarkSeeker {
-   {abstract} +find()
-   {abstract} +stop()
 }
 
 class GoogleObjSeeker {
+   -path
+   -properties
    +find()
    +stop()
 }
 
-
-interface CloudService {
-  {abstract} +isConnected()
+class GoogleVision {
+   -properties
+   +doRequest()
 }
 
 @enduml
