@@ -1,12 +1,12 @@
 @startuml
 
 abstract class Controller {
-  -descriptions
-  {abstract}+start()
-  {abstract}+stop()
-  +getStatistics()
-  +getDetections()
-  +detectIn()
+  {abstract}-storage
+  {abstract}-properties
+  -paths
+  +detections
+  +start()
+  +stop()
 }
 
 class MobileController {
@@ -25,21 +25,37 @@ class DesktopController {
   +stop()
 }
 
-
-class Detection {
-  -path
-  -descriptions
-  -state
+class DetectionsStorage {
+   +save()
+   +load()
 }
 
+class ObjectSeekerFactory {
+   +getObjSeekers()
+}
 
-Controller o- "0..*" Detection
-Detection *- DETECTION
-Seeker o..> "1" Detection
+class PicSeekerFactory {
+   +getPicSeekers()
+}
+
+class Detection {
+  +path
+  +descriptions
+  +state
+}
+
+Controller *- Properties
+Controller *- DetectionsStorage
+Controller *- "0..*" Detection
+Controller o..> Detections
 Controller o..> "1..*" Seeker
+Controller ..> ObjectSeekerFactory
+Controller ..> PicSeekerFactory
+Detection *- Detections
+Seeker o..> "1" Detection
 Seeker <|.. PicsSeeker
 
-enum DETECTION {
+enum Detections {
    PROCESSING
    NO
    FOUND

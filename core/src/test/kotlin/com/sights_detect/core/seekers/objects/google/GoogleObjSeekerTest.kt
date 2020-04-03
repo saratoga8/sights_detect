@@ -7,12 +7,13 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.features.json.GsonSerializer
 import io.ktor.client.features.json.JsonFeature
-import io.ktor.http.*
+import io.ktor.http.ContentType
+import io.ktor.http.Url
+import io.ktor.http.headersOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -93,7 +94,8 @@ internal class GoogleObjSeekerTest {
 	}
 
 	@Test
-	fun `Invalid image path`() = runBlockingTest {
+	@DisplayName("Invalid image path")
+	fun invalidImgPath() {
 		try {
 			val found = GoogleObjSeeker("/sdfasdf/adsfasdf", properties).find()
 			Assertions.assertTrue(found.isEmpty(), "There shouldn't be any founds")
@@ -112,6 +114,7 @@ internal class GoogleObjSeekerTest {
 		return file
 	}
 
+	@Disabled
 	@Test
 	@DisplayName("Google Vision mocking")
 	fun mocking() {
@@ -122,12 +125,12 @@ internal class GoogleObjSeekerTest {
 
 	class GoogleVisionTest(private val properties: Properties): GoogleVision(properties) {
 		suspend fun test(path: String) = CoroutineScope(Dispatchers.IO).async {
-			RequestMock(properties).post(buildRequest(path))
+			RequestMock(properties, "{responses: []}").post(buildRequest(path))
 		}
 	}
 
-	class RequestMock(private val properties: Properties) : Request(properties) {
-		override fun getClient(): HttpClient {
+	class RequestMock(private val properties: Properties, private val responseStr: String) : Request(properties) {
+		override fun getClient(requestTimeout: Long, connectTimeout: Long): HttpClient {
 			return HttpClient(MockEngine) {
 				install(JsonFeature) {
 					serializer = GsonSerializer {
@@ -140,7 +143,7 @@ internal class GoogleObjSeekerTest {
 						when (request.url) {
 							Url("https://${properties.getProperty("host")}/${properties.getProperty("path")}?key=${properties.getProperty("key")}") -> {
 								val responseHeaders = headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))
-								respond("{responses: []}", headers = responseHeaders)
+								respond(responseStr, headers = responseHeaders)
 							}
 							else -> error("Unhandled ${request.url}")
 						}
@@ -149,4 +152,5 @@ internal class GoogleObjSeekerTest {
 			}
 		}
 	}
+
 }

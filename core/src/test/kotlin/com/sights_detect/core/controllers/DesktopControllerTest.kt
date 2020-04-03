@@ -5,10 +5,15 @@ import com.sights_detect.core.detections.Detection
 import com.sights_detect.core.detections.Detections
 import com.sights_detect.core.detections.DetectionsStorage
 import com.sights_detect.core.seekers.Seeker
-import kotlinx.coroutines.*
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
+import org.junit.Assert
 import org.junit.jupiter.api.*
 import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.lang.Thread.sleep
 import java.util.*
@@ -17,6 +22,17 @@ import java.util.*
 class DesktopControllerTest {
 
 	private var rootPath = ""
+
+	companion object {
+		val properties = Properties()
+		@BeforeAll
+		fun before() {
+			val fileName = "google.properties"
+			val url = javaClass.classLoader.getResource(fileName)
+			Assert.assertNotNull("Can't find resource file $fileName", url)
+			properties.load(FileInputStream(url.path))
+		}
+	}
 
 	@BeforeEach
 	fun setUp() {
@@ -42,7 +58,7 @@ class DesktopControllerTest {
 			createTempFile("test3", ".txt", File(rootPath))
 			createTempFile("test4", ".dat", File(rootPath))
 
-			class TestController : DesktopController(listOf(rootPath)) {
+			class TestController : DesktopController(listOf(rootPath), properties) {
 				suspend fun test() {
 						val detections = findNewPics()
 
@@ -67,7 +83,7 @@ class DesktopControllerTest {
 				createTempFile("test2", ".jpg", subDir)
 				createTempFile("test3", ".txt", subDir)
 				createTempFile("test4", ".dat", subDir)
-				class TestController : DesktopController(listOf(rootPath)) {
+				class TestController : DesktopController(listOf(rootPath), properties) {
 					fun test() {
 						GlobalScope.launch {
 							val detections = findNewPics()
@@ -98,7 +114,7 @@ class DesktopControllerTest {
 			}
 			Assertions.assertTrue(createTempDir(rootPath + File.separator + "empty").exists(), "Empty temp dir hasn't created")
 
-			class TestController : DesktopController(subDirs.asList()) {
+			class TestController : DesktopController(subDirs.asList(), properties) {
 				suspend fun test() {
 					val detections = findNewPics()
 					Assertions.assertEquals(4, detections.size, "Found detections number invalid")
@@ -114,7 +130,8 @@ class DesktopControllerTest {
 	}
 
 	@Test
-	fun `Save detections`() = runBlockingTest {
+	@DisplayName("Save detections")
+	fun saveDetections() {
 		try {
 			val subDirs = arrayOf(rootPath + File.separator + "dir1", rootPath + File.separator + "dir2")
 			subDirs.forEach { path ->
@@ -126,10 +143,10 @@ class DesktopControllerTest {
 			}
 			Assertions.assertTrue(createTempDir(rootPath + File.separator + "empty").exists(), "Empty temp dir hasn't created")
 
-			class TestController : DesktopController(subDirs.asList()) {
+			class TestController : DesktopController(subDirs.asList(), properties) {
 				override val storage = DetectionsStorage<Hashtable<String, Detection>>(rootPath + File.separator + "detections.json")
-				fun test() {
-					start()
+				suspend fun test() {
+					findNewPics()
 					val expected = detections
 					saveDetections()
 					loadDetections()
@@ -141,16 +158,17 @@ class DesktopControllerTest {
 					}
 				}
 			}
-			TestController().test()
+			runBlocking { TestController().test() }
 		} catch (e: Exception) {
 			fail("Test aborted: $e")
 		}
 	}
 
 	@Test
-	fun `Try to load detections from invalid path`() {
+	@DisplayName("Try to load detections from invalid path")
+	fun invalidPath() {
 		try {
-			class TestController : DesktopController(listOf()) {
+			class TestController : DesktopController(listOf(), properties) {
 				override val storage = DetectionsStorage<Hashtable<String, Detection>>(rootPath + File.separator + "bla-bla.json")
 				fun test() {
 					loadDetections()
@@ -163,4 +181,38 @@ class DesktopControllerTest {
 		}
 	}
 
+
+	@Test
+	@DisplayName("Parallel run of detection objects in pictures")
+	fun detectObjs() {
+		var url = javaClass.classLoader.getResource("man.jpg")
+		Assertions.assertNotNull(url, "Can't find a file with picture in resources")
+		val path = url.path
+
+		val detections = List<Detection>(100) { Detection(rootPath + File.separator + "pic$it.jpg") }
+		detections.forEach { detection -> File(path).copyTo(File(detection.path)) }
+		detections.forEach { detection -> Assertions.assertTrue(File(detection.path).exists(), "File ${detection.path} doesn't exist") }
+
+		class TestController: DesktopController(listOf(), properties) {
+			suspend fun testFindObjs(detections: List<Detection>) {
+				super.findObjects(detections)
+			}
+
+			override suspend fun buildObjSeekers(paths: List<String>): Set<Seeker<Detection>> {
+				class TestSeeker(private val detectionPath: String) : Seeker<Detection> {
+					override fun find(): List<Detection> {
+						sleep(1000)
+						return listOf(Detection(detectionPath))
+					}
+				}
+				return paths.map { path -> TestSeeker(path) }.toSet()
+			}
+		}
+		runBlocking {
+			val startTime = System.currentTimeMillis()
+			TestController().testFindObjs(detections)
+			val stopTime = System.currentTimeMillis()
+			assertThat(stopTime - startTime, Matchers.lessThan(3000L))
+		}
+	}
 }

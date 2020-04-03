@@ -6,7 +6,6 @@ import com.sights_detect.core.seekers.objects.ObjectSeeker
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.File
-import java.io.FileInputStream
 import java.util.*
 
 
@@ -14,7 +13,7 @@ class GoogleObjSeeker(private val path: String, private val properties: Properti
 	override fun find(): List<Detection> {
 		if (properties.isNotEmpty()) {
 			if (File(path).exists()) {
-				val response = runBlocking { GoogleVision(properties).request(path) }
+				val response = runBlocking { GoogleVision(properties).doRequest(path) }
 				return listOf(createDetections(response))
 			} else logger.warn( "File of picture $path DOESN'T exist")
 		} else logger.error("Google Cloud Vision API info from properties file hasn't loaded")

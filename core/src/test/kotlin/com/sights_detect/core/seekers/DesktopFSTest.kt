@@ -1,7 +1,7 @@
 package com.sights_detect.core.seekers
 
 import com.sights_detect.core.seekers.pics.DesktopFS
-import kotlinx.coroutines.*
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import java.io.File
 import java.io.IOException

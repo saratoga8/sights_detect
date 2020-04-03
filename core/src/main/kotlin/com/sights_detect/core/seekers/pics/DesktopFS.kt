@@ -2,7 +2,6 @@ package com.sights_detect.core.seekers.pics
 
 import com.sights_detect.core.detections.Detection
 import org.apache.logging.log4j.kotlin.Logging
-import org.apache.logging.log4j.kotlin.logger
 import java.io.File
 
 
