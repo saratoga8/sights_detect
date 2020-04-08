@@ -10,8 +10,7 @@ abstract class Controller {
 }
 
 class DesktopController {
-  -storage
-  {static} +getInstance()
+  #storage
 }
 
 class DetectionsStorage {
