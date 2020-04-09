@@ -13,16 +13,12 @@ import java.lang.reflect.Type
 class DetectionsStorage<T>(private val path: String = "detections.json"): Logging {
 	fun save(detections: T, type: Type) {
 		logger.debug("Saving detections in ${File(path).absolutePath}")
+
 		exec {
 			FileWriter(path).use { writer ->
 				Gson().toJson(detections, type, writer)
 			}
 		}
-//		catch (e: JsonParseException) {
-//			logger.error("Can't save detections to the file $path: $e")
-//		} catch (e: IOException) {
-//			logger.error("Can't save detections to the file $path: $e")
-//		}
 	}
 
 	fun load(type: Type): T? {
@@ -32,13 +28,6 @@ class DetectionsStorage<T>(private val path: String = "detections.json"): Loggin
 				return@exec Gson().fromJson(JsonReader(reader), type)
 			}
 		}
-//		catch (e: JsonParseException) {
-//			logger.error("Can't load detections from the file $path: $e")
-//		}
-//		catch (e: IOException) {
-//			logger.error("Can't load detections from the file $path: $e")
-//		}
-//		return null
 	}
 
 	private fun <R>exec(other: () -> R?): R? {

@@ -98,7 +98,9 @@ internal class GoogleObjSeekerTest {
 	fun invalidImgPath() {
 		try {
 			val found = GoogleObjSeeker("/sdfasdf/adsfasdf", properties).find()
-			Assertions.assertTrue(found.isEmpty(), "There shouldn't be any founds")
+			Assertions.assertEquals(1, found.size, "There should be only one detection")
+			Assertions.assertFalse(found.last().error.isEmpty(), "Should be there error message of detection")
+			Assertions.assertEquals(Detections.UNKNOWN, found.last().state, "Detection type should be unknown")
 		} catch (e: Exception) {
 			fail("Test aborted because of: $e")
 		}

@@ -5,5 +5,5 @@ import com.sights_detect.core.seekers.Seeker
 
 internal interface PicsSeeker: Seeker<Detection> {
 	val picFormats: Array<String>
-		get() = arrayOf("jpg", "jpeg")
+		get() = arrayOf("jpg", "jpeg", "png", "gif", "bmp", "webp", "raw", "ico", "pdf", "tiff")
 }

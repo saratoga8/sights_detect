@@ -17,17 +17,17 @@ open class GoogleVision(properties: Properties): Logging {
 			request.post(buildRequest(imgPath))
 		}
 		catch (e: ClientRequestException) {
-			exception_response(e, "HTTP request to Google Vision Service has failed")
+			exceptionResponse(e, "HTTP request to Google Vision Service has failed")
 		}
 		catch (e: HttpRequestTimeoutException) {
-			exception_response(e, "HTTP request to Google Vision Service timed out")
+			exceptionResponse(e, "HTTP request to Google Vision Service timed out")
 		}
 		catch (e: ConnectTimeoutException) {
-			exception_response(e, "Connection to Google Vision Service timed out")
+			exceptionResponse(e, "Connection to Google Vision Service timed out")
 		}
 	}
 
-	private fun exception_response(exception: Exception, msg: String): GoogleResponse {
+	private fun exceptionResponse(exception: Exception, msg: String): GoogleResponse {
 		error = msg
 //		logger.error(exception.toString())
 		return GoogleResponse(listOf())

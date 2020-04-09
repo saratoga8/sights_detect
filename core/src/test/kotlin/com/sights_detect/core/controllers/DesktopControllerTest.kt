@@ -26,10 +26,11 @@ class DesktopControllerTest {
 	companion object {
 		val properties = Properties()
 		@BeforeAll
-		fun before() {
+		@JvmStatic
+		internal fun before() {
 			val fileName = "google.properties"
 			val url = javaClass.classLoader.getResource(fileName)
-			Assert.assertNotNull("Can't find resource file $fileName", url)
+			Assertions.assertNotNull(url, "Can't find resource file $fileName")
 			properties.load(FileInputStream(url.path))
 		}
 	}
@@ -172,7 +173,7 @@ class DesktopControllerTest {
 				override val storage = DetectionsStorage<Hashtable<String, Detection>>(rootPath + File.separator + "bla-bla.json")
 				fun test() {
 					loadDetections()
-					Assertions.assertTrue(detections.isEmpty(), "Shouldn't be any detections")
+					Assertions.assertTrue(detections.isEmpty, "Shouldn't be any detections")
 				}
 			}
 			TestController().test()
@@ -185,11 +186,11 @@ class DesktopControllerTest {
 	@Test
 	@DisplayName("Parallel run of detection objects in pictures")
 	fun detectObjs() {
-		var url = javaClass.classLoader.getResource("man.jpg")
+		val url = javaClass.classLoader.getResource("man.jpg")
 		Assertions.assertNotNull(url, "Can't find a file with picture in resources")
 		val path = url.path
 
-		val detections = List<Detection>(100) { Detection(rootPath + File.separator + "pic$it.jpg") }
+		val detections = List(100) { Detection(rootPath + File.separator + "pic$it.jpg") }
 		detections.forEach { detection -> File(path).copyTo(File(detection.path)) }
 		detections.forEach { detection -> Assertions.assertTrue(File(detection.path).exists(), "File ${detection.path} doesn't exist") }
 

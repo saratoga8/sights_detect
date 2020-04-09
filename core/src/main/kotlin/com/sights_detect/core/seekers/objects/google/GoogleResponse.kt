@@ -1,30 +1,37 @@
 package com.sights_detect.core.seekers.objects.google
 
-data class GoogleResponse(
-    val responses: List<Response>
-)
+data class GoogleResponse(var _responses: List<Response>?) {
+	var responses: List<Response>? = listOf()
+	set(value) {
+		value
+		value ?: listOf()
+	}
+}
 
-data class Response(
-		val landmarkAnnotations: List<LandmarkAnnotation>,
-		val webDetection: WebDetection
-)
+data class Response(val webDetection: WebDetection?) {
+	var landmarkAnnotations: List<LandmarkAnnotation>? = listOf()
+		set(value) {
+			value
+			value ?: listOf()
+		}
+}
 
 data class LandmarkAnnotation(
-		val boundingPoly: BoundingPoly,
+		val boundingPoly: BoundingPoly?,
 		val description: String,
-		val locations: List<Location>,
+		val locations: List<Location>?,
 		val mid: String,
 		val score: Double
 )
 
 data class WebDetection(
-		val bestGuessLabels: List<BestGuessLabel>,
-		val visuallySimilarImages: List<VisuallySimilarImage>,
-		val webEntities: List<WebEntity>
+		val bestGuessLabels: List<BestGuessLabel>?,
+		val visuallySimilarImages: List<VisuallySimilarImage>?,
+		val webEntities: List<WebEntity>?
 )
 
 data class BoundingPoly(
-		val vertices: List<Vertice>
+		val vertices: List<Vertice>?
 )
 
 data class BestGuessLabel(

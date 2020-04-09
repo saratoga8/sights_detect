@@ -24,7 +24,7 @@ open class Request(private val properties: Properties, requestTimeout: Long = 12
 		client = getClient(requestTimeout, connectTimeout)
 	}
 
-	protected open fun getClient(requestTimeout: Long, connectTimeout: Long): HttpClient {
+	protected open fun getClient(requestTimeout: Long, connectTimeout: Long): HttpClient { // open only for tests
 		return HttpClient(Apache) {
 			install(JsonFeature) {
 				serializer = GsonSerializer {
