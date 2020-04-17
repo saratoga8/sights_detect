@@ -5,7 +5,7 @@ import org.apache.logging.log4j.kotlin.Logging
 import java.io.File
 
 
-class DesktopFS(private val dirPath: String, private val recursive: Boolean = true): PicsSeeker, Logging {
+open class DesktopFS(private val dirPath: String, private val recursive: Boolean = true): PicsSeeker(), Logging {
 	init {
 		require(File(dirPath).exists())    { "The given path $dirPath doesn't exist" }
 		require(File(dirPath).isDirectory) { "The given path $dirPath isn't directory" }
@@ -13,11 +13,18 @@ class DesktopFS(private val dirPath: String, private val recursive: Boolean = tr
 
 	override fun find(): List<Detection> {
 		logger.debug("Finding pictures inside $dirPath")
+		stopped = false
 		val results = mutableListOf<Detection>()
 		for (pic_format in picFormats) {
-			fun getAllFiles(): List<File> = if (recursive) { File(dirPath).walk().toList() } else { File(dirPath).listFiles().toList() }
+			if (stopped) break
 			results.addAll(getAllFiles().filter { it.extension == pic_format }.map { Detection(it.absolutePath) }.toList())
 		}
-		return results
+		return results.also { stopped = true }
+	}
+
+	protected open fun getAllFiles(): List<File> {
+		if (recursive) return File(dirPath).walk().toList()
+		val files = File(dirPath).listFiles()
+		return files?.toList() ?: listOf()
 	}
 }

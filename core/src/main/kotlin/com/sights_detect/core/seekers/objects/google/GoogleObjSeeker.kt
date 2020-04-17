@@ -9,15 +9,23 @@ import java.io.File
 import java.util.*
 
 
-class GoogleObjSeeker(private val path: String, private val properties: Properties): ObjectSeeker, Logging {
+class GoogleObjSeeker(private val path: String, private val properties: Properties): ObjectSeeker(), Logging {
+	private val vision: GoogleVision = GoogleVision(properties)
+
 	override fun find(): List<Detection> {
 		if (properties.isNotEmpty()) {
 			return if (File(path).exists()) {
-				val response = runBlocking { GoogleVision(properties).doRequest(path) }
+				stopped = false
+				val response = runBlocking { vision.doRequest(path) }
 				listOf(createDetections(response))
 			} else listOf(Detection(path, "File of picture $path DOESN'T exist"))
 		} else logger.error("Google Cloud Vision API info from properties file hasn't loaded")
 		return listOf()
+	}
+
+	override fun stop() {
+		vision.stop()
+		stopped = true
 	}
 
 	private fun createDetections(googleResponse: GoogleResponse): Detection {

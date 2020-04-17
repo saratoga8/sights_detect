@@ -5,12 +5,10 @@ import com.sights_detect.core.detections.Detection
 import com.sights_detect.core.detections.Detections
 import com.sights_detect.core.detections.DetectionsStorage
 import com.sights_detect.core.seekers.Seeker
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import com.sights_detect.core.seekers.pics.DesktopFS
+import kotlinx.coroutines.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
-import org.junit.Assert
 import org.junit.jupiter.api.*
 import java.io.File
 import java.io.FileInputStream
@@ -32,6 +30,7 @@ class DesktopControllerTest {
 			val url = javaClass.classLoader.getResource(fileName)
 			Assertions.assertNotNull(url, "Can't find resource file $fileName")
 			properties.load(FileInputStream(url.path))
+//			properties.load(FileInputStream("/home/saratoga/progs/SightsDetect/core/src/test/resources/google.properties"))
 		}
 	}
 
@@ -61,7 +60,7 @@ class DesktopControllerTest {
 
 			class TestController : DesktopController(listOf(rootPath), properties) {
 				suspend fun test() {
-						val detections = findNewPics()
+						val detections = findNewPics().awaitAll().flatten()
 
 						detections.forEach { detection -> Assertions.assertTrue(detection.path.endsWith(".jpg"), "Found detection hasn't extension of pic in path: ${detection.path}") }
 						detections.forEach { detection -> Assertions.assertTrue(detection.descriptions.isEmpty(), "Found detection shouldn't have a description") }
@@ -87,7 +86,7 @@ class DesktopControllerTest {
 				class TestController : DesktopController(listOf(rootPath), properties) {
 					fun test() {
 						GlobalScope.launch {
-							val detections = findNewPics()
+							val detections = findNewPics().awaitAll().flatten()
 							detections.forEach { detection -> Assertions.assertTrue(detection.path.startsWith(subDir.absolutePath), "Found detection path hasn't sub-dir's path: ${detection.path}") }
 							detections.forEach { detection -> Assertions.assertTrue(detection.path.endsWith(".jpg"), "Found detection hasn't extension of pic in path: ${detection.path}") }
 							detections.forEach { detection -> Assertions.assertTrue(detection.descriptions.isEmpty(), "Found detection shouldn't have a description") }
@@ -116,15 +115,17 @@ class DesktopControllerTest {
 			Assertions.assertTrue(createTempDir(rootPath + File.separator + "empty").exists(), "Empty temp dir hasn't created")
 
 			class TestController : DesktopController(subDirs.asList(), properties) {
-				suspend fun test() {
-					val detections = findNewPics()
+				fun test() {
+					val detections = runBlocking {
+						findNewPics().awaitAll().flatten()
+					}
 					Assertions.assertEquals(4, detections.size, "Found detections number invalid")
 					detections.forEach { detection -> Assertions.assertTrue(detection.path.endsWith(".jpg"), "Found detection hasn't extension of pic in path: ${detection.path}") }
 					detections.forEach { detection -> Assertions.assertTrue(detection.descriptions.isEmpty(), "Found detection shouldn't have a description") }
 					detections.forEach { detection -> Assertions.assertTrue(detection.state == Detections.UNKNOWN, "Found detection should have state UNKNOWN") }
 				}
 			}
-			runBlocking { TestController().test() }
+			TestController().test()
 		} catch (e: IOException) {
 			fail("The test aborted: $e")
 		}
@@ -199,10 +200,10 @@ class DesktopControllerTest {
 				super.findObjects(detections)
 			}
 
-			override suspend fun buildObjSeekers(paths: List<String>): Set<Seeker<Detection>> {
+			override fun buildObjSeekers(paths: List<String>): Set<Seeker<Detection>> {
 				class TestSeeker(private val detectionPath: String) : Seeker<Detection> {
 					override fun find(): List<Detection> {
-						sleep(1000)
+						runBlocking { delay(1000) }
 						return listOf(Detection(detectionPath))
 					}
 				}
@@ -214,6 +215,98 @@ class DesktopControllerTest {
 			TestController().testFindObjs(detections)
 			val stopTime = System.currentTimeMillis()
 			assertThat(stopTime - startTime, Matchers.lessThan(3000L))
+		}
+	}
+
+	@Test
+	@DisplayName("Stopping of pictures find")
+	fun stopFindPics() {
+		try {
+			val subDirs = arrayOf(rootPath + File.separator + "dir1", rootPath + File.separator + "dir2")
+			subDirs.forEach { path ->
+				File(path).mkdir()
+				createTempFile("test", ".jpg", File(path))
+				createTempFile("test2", ".jpg", File(path))
+				createTempFile("test3", ".txt", File(path))
+				createTempFile("test4", ".dat", File(path))
+			}
+			Assertions.assertTrue(createTempDir(rootPath + File.separator + "empty").exists(), "Empty temp dir hasn't created")
+
+			class TestObjSeeker(dirPath: String, recursive: Boolean = true) : DesktopFS(dirPath, recursive) {
+				override fun getAllFiles(): List<File> {
+					runBlocking { delay(3000) }
+					return listOf()
+				}
+			}
+
+			val controller = object : DesktopController(subDirs.asList(), properties) {
+				fun startTest() {
+					Assertions.assertTrue(seekers.isEmpty(), "Before starting shouldn't be seekers")
+					findNewPics()
+					Assertions.assertEquals(2, seekers.size, "After start should be added new seekers")
+				}
+
+				override fun buildPicSeekers(): Set<Seeker<Detection>> {
+					return subDirs.map { TestObjSeeker(it) }.toSet()
+				}
+
+				fun checkSeekersStopped(state: Boolean) {
+					var msg = "Every seeker shouldn't be "
+					msg += if(state) "running" else  "stopped"
+					seekers.forEach { Assertions.assertEquals(state, it.isStopped(), msg) }
+				}
+			}
+
+			runBlocking {
+				controller.startTest()
+				delay(1500)
+				controller.checkSeekersStopped(false)
+				controller.stop()
+				delay(200)
+				controller.checkSeekersStopped(true)
+			}
+		} catch (e: IOException) {
+			fail("The test aborted: $e")
+		}
+	}
+
+	@Test
+	@DisplayName("Stopping of objects find")
+	fun stopDetectsObjs() {
+		val url = javaClass.classLoader.getResource("man.jpg")
+		Assertions.assertNotNull(url, "Can't find a file with picture in resources")
+		val path = url.path
+
+		val picsNum = 100
+		val detections = List(picsNum) { Detection(rootPath + File.separator + "pic$it.jpg") }
+		detections.forEach { detection -> File(path).copyTo(File(detection.path)) }
+		detections.forEach { detection -> Assertions.assertTrue(File(detection.path).exists(), "File ${detection.path} doesn't exist") }
+
+		class TestController: DesktopController(listOf(), properties) {
+			suspend fun run() {
+				val foundDetections: Hashtable<String, Detection> = Hashtable()
+				detections.forEach { foundDetections[it.path] = it }
+				super.detections = foundDetections
+				detectObjects()
+			}
+
+			fun chkSeekersStarted() {
+				Assertions.assertEquals(picsNum, seekers.size, "Invalid number of seekers after start")
+				Assertions.assertTrue(seekers.count { it.isStopped() } < picsNum, "There is no started seekers")
+			}
+
+			fun chkNoSeekers() {
+				Assertions.assertEquals(0, seekers.size, "Invalid number of seekers after stop")
+			}
+		}
+		runBlocking {
+			val test = TestController()
+			test.run()
+			sleep(500)
+			test.chkSeekersStarted()
+			test.stop()
+			sleep(100)
+			test.chkNoSeekers()
 		}
 	}
 }

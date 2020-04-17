@@ -12,6 +12,7 @@ import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
+import kotlinx.coroutines.cancel
 import org.apache.logging.log4j.kotlin.Logging
 import java.util.*
 
@@ -42,6 +43,8 @@ open class Request(private val properties: Properties, requestTimeout: Long = 12
 //			}
 		}
 	}
+
+	fun stop() = client.cancel()
 
 	suspend fun post(bodyObj: Any): GoogleResponse {
 		return this.client.post<GoogleResponse> {

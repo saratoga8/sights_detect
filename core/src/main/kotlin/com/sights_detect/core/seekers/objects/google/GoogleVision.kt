@@ -6,7 +6,6 @@ import io.ktor.network.sockets.ConnectTimeoutException
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.File
 import java.util.*
-import kotlin.Exception
 
 open class GoogleVision(properties: Properties): Logging {
 	open val request = com.sights_detect.core.net.Request(properties)
@@ -26,6 +25,8 @@ open class GoogleVision(properties: Properties): Logging {
 			exceptionResponse(e, "Connection to Google Vision Service timed out")
 		}
 	}
+
+	fun stop() = request.stop()
 
 	private fun exceptionResponse(exception: Exception, msg: String): GoogleResponse {
 		error = msg

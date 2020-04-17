@@ -78,6 +78,7 @@ internal class GoogleObjSeekerTest {
 		}
 	}
 
+
 	@ParameterizedTest
 	@DisplayName("No landmarks")
 	@ValueSource(strings = ["https://media.istockphoto.com/photos/slice-cucumber-in-squar-white-cup-on-wooden-table-picture-id640908364"])
@@ -92,6 +93,7 @@ internal class GoogleObjSeekerTest {
 			fail("Test aborted because of: $e")
 		}
 	}
+
 
 	@Test
 	@DisplayName("Invalid image path")

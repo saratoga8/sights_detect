@@ -15,13 +15,22 @@ import java.util.*
 
 abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	var detections: Hashtable<String, Detection> = Hashtable()
-		private set
+		protected set
 	protected abstract val storage: DetectionsStorage<Hashtable<String, Detection>>
 	protected abstract val properties: Properties
 	private val type: Type = object : TypeToken<Hashtable<String, Detection>>() {}.type
 
-	fun stop() {
+	protected val seekers: MutableList<Seeker<Detection>> = mutableListOf()
 
+
+
+	fun stop() {
+		GlobalScope.launch {
+			seekers.forEach { it.stop() }
+			while (seekers.isNotEmpty()) {
+				seekers.removeAll { it.isStopped() }
+			}
+		}
 	}
 
 	fun start() {
@@ -31,8 +40,8 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 		}
 	}
 
-	private suspend fun detectObjects() {
-		findObjects(detections.values.toList()).forEach { found ->
+	protected suspend fun detectObjects() {
+		findObjects(detections.values.toList()).awaitAll().flatten().forEach { found ->
 			val prevDetection = detections[found.path]
 			if (prevDetection != null) {
 				if (prevDetection.state != found.state) {
@@ -44,41 +53,37 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 		}
 	}
 
-	protected open suspend fun detectNewPics() = findNewPics().forEach { found -> detections.putIfAbsent(found.path, found) }
-
-	protected open suspend fun findObjects(detections: List<Detection>): List<Detection> {
-		val paths = detections.filter { detection -> detection.state == Detections.UNKNOWN }.map { detection -> detection.path }
-		return findBySeekers(buildObjSeekers(paths))
-//		val founds = mutableListOf<Detection>()
-//		buildObjSeekers(paths).map { seeker -> CoroutineScope(Dispatchers.IO).async { founds.addAll(seeker.find()) } }.forEach { job -> job.await() }
-//		return founds
+	protected open suspend fun detectNewPics() = findNewPics().awaitAll().flatten().forEach {
+		detections.putIfAbsent(it.path, it)
 	}
 
-	protected open suspend fun findNewPics(): List<Detection> {
-//		val founds = mutableListOf<Detection>()
-//		buildPicSeekers().map { seeker -> CoroutineScope(Dispatchers.IO).async { founds.addAll(seeker.find()) } }.forEach { job -> job.await() }
-//		return founds
-		return findBySeekers(buildPicSeekers())
+	protected open fun findObjects(detections: List<Detection>): List<Deferred<List<Detection>>> {
+		val paths = detections.filter { it.state == Detections.UNKNOWN }.map { it.path }
+		val objSeekers = buildObjSeekers(paths)
+		return findBySeekers(objSeekers).also { seekers.addAll(objSeekers) }
 	}
 
-	private suspend fun findBySeekers(seekers: Set<Seeker<Detection>>): List<Detection> {
-		val founds = mutableListOf<Detection>()
-		seekers.map { seeker -> CoroutineScope(Dispatchers.IO).async { founds.addAll(seeker.find()) } }.forEach { job -> job.await() }
-		return founds
+	protected open fun findNewPics(): List<Deferred<List<Detection>>> {
+		val picSeekers = buildPicSeekers()
+		return findBySeekers(picSeekers).also { seekers.addAll(picSeekers) }
 	}
 
-	protected open suspend fun buildObjSeekers(paths: List<String>): Set<Seeker<Detection>> {
+	private fun <T> findBySeekers(seekers: Set<Seeker<T>>): List<Deferred<List<T>>> {
+		return seekers.map { CoroutineScope(Dispatchers.IO).async { it.find() } }
+	}
+
+	protected open fun buildObjSeekers(paths: List<String>): Set<Seeker<Detection>> {
 		return ObjectSeekersFactory.getObjSeekers(paths, properties).toSet()
 	}
 
 	protected open fun buildPicSeekers(): Set<Seeker<Detection>> {
 		val picSeekers: MutableSet<Seeker<Detection>> = mutableSetOf()
-		paths.forEach { path -> picSeekers.addAll(PicSeekersFactory.getPicSeekers(path.toString())) }
+		paths.forEach { picSeekers.addAll(PicSeekersFactory.getPicSeekers(it.toString())) }
 		return picSeekers
 	}
 
 	protected fun saveDetections() {
-		val selectedDetections = detections.filterValues { detection -> detection.state != Detections.PROCESSING }
+		val selectedDetections = detections.filterValues { it.state != Detections.PROCESSING }
 		storage.save(Hashtable<String, Detection>(selectedDetections), type)
 	}
 
