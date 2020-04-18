@@ -9,7 +9,7 @@ import java.io.File
 import java.util.*
 
 
-class GoogleObjSeeker(private val path: String, private val properties: Properties): ObjectSeeker(), Logging {
+internal class GoogleObjSeeker(private val path: String, private val properties: Properties): ObjectSeeker(), Logging {
 	private val vision: GoogleVision = GoogleVision(properties)
 
 	override fun find(): List<Detection> {

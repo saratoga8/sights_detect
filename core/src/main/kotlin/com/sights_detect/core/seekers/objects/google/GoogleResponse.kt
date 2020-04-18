@@ -1,6 +1,6 @@
 package com.sights_detect.core.seekers.objects.google
 
-data class GoogleResponse(var _responses: List<Response>?) {
+internal data class GoogleResponse(var _responses: List<Response>?) {
 	var responses: List<Response>? = listOf()
 	set(value) {
 		value
@@ -8,7 +8,7 @@ data class GoogleResponse(var _responses: List<Response>?) {
 	}
 }
 
-data class Response(val webDetection: WebDetection?) {
+internal data class Response(val webDetection: WebDetection?) {
 	var landmarkAnnotations: List<LandmarkAnnotation>? = listOf()
 		set(value) {
 			value
@@ -16,7 +16,7 @@ data class Response(val webDetection: WebDetection?) {
 		}
 }
 
-data class LandmarkAnnotation(
+internal data class LandmarkAnnotation(
 		val boundingPoly: BoundingPoly?,
 		val description: String,
 		val locations: List<Location>?,
@@ -24,40 +24,40 @@ data class LandmarkAnnotation(
 		val score: Double
 )
 
-data class WebDetection(
+internal data class WebDetection(
 		val bestGuessLabels: List<BestGuessLabel>?,
 		val visuallySimilarImages: List<VisuallySimilarImage>?,
 		val webEntities: List<WebEntity>?
 )
 
-data class BoundingPoly(
+internal data class BoundingPoly(
 		val vertices: List<Vertice>?
 )
 
-data class BestGuessLabel(
+internal data class BestGuessLabel(
 		val label: String
 )
 
-data class LatLng(
+internal data class LatLng(
 		val latitude: Double,
 		val longitude: Double
 )
 
-data class Location(
+internal data class Location(
 		val latLng: LatLng
 )
 
-data class WebEntity(
+internal data class WebEntity(
 		val description: String,
 		val entityId: String,
 		val score: Double
 )
 
-data class VisuallySimilarImage(
+internal data class VisuallySimilarImage(
 		val url: String
 )
 
-data class Vertice(
+internal data class Vertice(
 		val x: Int,
 		val y: Int
 )

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.kotlin.Logging
 import java.io.File
 import java.util.*
 
-open class GoogleVision(properties: Properties): Logging {
+internal open class GoogleVision(properties: Properties): Logging {
 	open val request = com.sights_detect.core.net.Request(properties)
 	var error = ""
 

@@ -16,7 +16,7 @@ import kotlinx.coroutines.cancel
 import org.apache.logging.log4j.kotlin.Logging
 import java.util.*
 
-open class Request(private val properties: Properties, requestTimeout: Long = 120000L, connectTimeout: Long = 30000L): Logging {
+internal open class Request(private val properties: Properties, requestTimeout: Long = 120000L, connectTimeout: Long = 30000L): Logging {
 	private val client: HttpClient
 	private val usedKeys = listOf("host", "path", "key")
 

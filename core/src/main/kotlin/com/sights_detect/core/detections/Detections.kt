@@ -1,5 +1,5 @@
 package com.sights_detect.core.detections
 
-enum class Detections {
+internal enum class Detections {
     PROCESSING, NO, UNKNOWN, FOUND;
 }

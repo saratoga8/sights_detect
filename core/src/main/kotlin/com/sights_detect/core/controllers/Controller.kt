@@ -13,7 +13,7 @@ import java.lang.reflect.Type
 import java.util.*
 
 
-abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
+internal abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	var detections: Hashtable<String, Detection> = Hashtable()
 		protected set
 	protected abstract val storage: DetectionsStorage<Hashtable<String, Detection>>
