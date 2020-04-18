@@ -22,7 +22,7 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 
 	protected val seekers: MutableList<Seeker<Detection>> = mutableListOf()
 
-
+	fun getDetections(): List<Detection> = detections.values.toList()
 
 	fun stop() {
 		GlobalScope.launch {
