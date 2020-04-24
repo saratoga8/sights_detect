@@ -4,7 +4,7 @@ import com.sights_detect.core.detections.Detection
 import com.sights_detect.core.seekers.Seeker
 import org.apache.logging.log4j.kotlin.Logging
 
-abstract class PicsSeeker: Seeker<Detection>, Logging {
+internal abstract class PicsSeeker: Seeker<Detection>, Logging {
 	val picFormats: Array<String>
 		get() = arrayOf("jpg", "jpeg", "png", "gif", "bmp", "webp", "raw", "ico", "pdf", "tiff")
 

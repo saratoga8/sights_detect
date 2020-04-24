@@ -7,13 +7,15 @@ import com.sights_detect.core.detections.DetectionsStorage
 import com.sights_detect.core.seekers.Seeker
 import com.sights_detect.core.seekers.objects.ObjectSeekersFactory
 import com.sights_detect.core.seekers.pics.PicSeekersFactory
+import com.sights_detect.core.statistics.Statistics
+import com.sights_detect.core.statistics.StatisticsData
 import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.Logging
 import java.lang.reflect.Type
 import java.util.*
 
 
-abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
+internal abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	var detections: Hashtable<String, Detection> = Hashtable()
 		protected set
 	protected abstract val storage: DetectionsStorage<Hashtable<String, Detection>>
@@ -21,6 +23,8 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	private val type: Type = object : TypeToken<Hashtable<String, Detection>>() {}.type
 
 	protected val seekers: MutableList<Seeker<Detection>> = mutableListOf()
+
+	fun getStatistics(): Statistics = StatisticsData(detections.values.toList())
 
 	fun getDetections(): List<Detection> = detections.values.toList()
 
@@ -34,6 +38,7 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	}
 
 	fun start() {
+		detections.clear()
 		GlobalScope.launch {
 			detectNewPics()
 			detectObjects()

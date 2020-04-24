@@ -5,7 +5,7 @@ import com.sights_detect.core.seekers.Seeker
 import com.sights_detect.core.seekers.objects.google.GoogleObjSeeker
 import java.util.*
 
-object ObjectSeekersFactory {
+internal object ObjectSeekersFactory {
 	fun getObjSeekers(paths: List<String>, properties: Properties): List<Seeker<Detection>> {
 		return paths.map { path -> GoogleObjSeeker(path, properties) }
 	}
