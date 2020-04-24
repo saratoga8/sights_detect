@@ -1,8 +1,60 @@
 @startuml
-   [FileOps]
-   Statistics - [Controller]
-   Control - [Controller]
-   Paths - [Controller]
-   [Controller] ..> [FileOps] : paths/stop/start
-   [Controller] ..> [ObjsDetect]:path/start/stop
+   package "controllers" {
+      [Controller]
+   }
+   package "detections" {
+      [Detection]
+      [Detections]
+      [DetectionsStorage]
+   }
+   package "seekers" {
+      [Seeker]
+      package "objects" {
+         [ObjectSeekersFactory]
+         [ObjectSeeker]
+         package "google" {
+            [GoogleResponse]
+            [GoogleObjSeeker]
+         }
+      }
+      package "pics" {
+         [PicSeekersFactory]
+         [DesktopFS]
+         [PicSeeker]
+      }
+   }
+   package "statistics" {
+      [Statistics]
+      [StatisticsData]
+      [DetectionError]
+      [DetectionInfo]
+   }
+   package "net" {
+      [Request]
+   }
+
+
+   [Controller] ..> [Detections]
+   [Controller] ..> [DetectionsStorage]
+   [Controller] ..> [Detection]
+   [Controller] ..> [Seeker]
+   [Controller] ..> [Statistics]
+   [Controller] ..> [StatisticsData]
+   [Controller] ..> [PicSeekersFactory]
+   [Controller] ..> [ObjectSeekersFactory]
+   [Request] ..> [GoogleResponse]
+   [ObjectSeeker] ..> [Detection]
+   [ObjectSeeker] ..> [Seeker]
+   [GoogleObjSeeker] ..> [Detection]
+   [GoogleObjSeeker] ..> [Detections]
+   [GoogleObjSeeker] ..> [ObjectSeeker]
+   [DesktopFS] ..> [Detection]
+   [PicSeekersFactory] ..> [Seeker]
+   [PicSeekersFactory] ..> [Detection]
+   [PicSeeker] ..> [Detection]
+   [PicSeeker] ..> [Seeker]
+   [DetectionError] ..> [Detection]
+   [DetectionInfo] ..> [Detection]
+   [StatisticsData] ..> [Detection]
+   [StatisticsData] ..> [Detections]
 @enduml

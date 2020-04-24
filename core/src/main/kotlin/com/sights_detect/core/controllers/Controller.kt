@@ -7,6 +7,8 @@ import com.sights_detect.core.detections.DetectionsStorage
 import com.sights_detect.core.seekers.Seeker
 import com.sights_detect.core.seekers.objects.ObjectSeekersFactory
 import com.sights_detect.core.seekers.pics.PicSeekersFactory
+import com.sights_detect.core.statistics.Statistics
+import com.sights_detect.core.statistics.StatisticsData
 import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.Logging
 import java.lang.reflect.Type
@@ -22,6 +24,8 @@ internal abstract class Controller<in T>(private val paths: Iterable<T>): Loggin
 
 	protected val seekers: MutableList<Seeker<Detection>> = mutableListOf()
 
+	fun getStatistics(): Statistics = StatisticsData(detections.values.toList())
+
 	fun getDetections(): List<Detection> = detections.values.toList()
 
 	fun stop() {
@@ -34,6 +38,7 @@ internal abstract class Controller<in T>(private val paths: Iterable<T>): Loggin
 	}
 
 	fun start() {
+		detections.clear()
 		GlobalScope.launch {
 			detectNewPics()
 			detectObjects()

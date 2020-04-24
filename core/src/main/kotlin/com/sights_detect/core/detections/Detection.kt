@@ -3,7 +3,7 @@ package com.sights_detect.core.detections
 import com.sights_detect.core.detections.Detections.UNKNOWN
 
 
-internal data class Detection(var path: String, var error: String = "") {
+data class Detection(var path: String, var error: String = "") {
 	var state: Detections = UNKNOWN
 	var descriptions: List<String> = listOf()
 	init {

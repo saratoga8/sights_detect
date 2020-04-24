@@ -30,7 +30,6 @@ class DesktopControllerTest {
 			val url = javaClass.classLoader.getResource(fileName)
 			Assertions.assertNotNull(url, "Can't find resource file $fileName")
 			properties.load(FileInputStream(url.path))
-//			properties.load(FileInputStream("/home/saratoga/progs/SightsDetect/core/src/test/resources/google.properties"))
 		}
 	}
 
@@ -307,6 +306,71 @@ class DesktopControllerTest {
 			test.stop()
 			sleep(100)
 			test.chkNoSeekers()
+		}
+	}
+
+	@Test
+	@DisplayName("Found pics statistics")
+	fun testPicsStat() {
+		val picsNum = 4
+		try {
+			createTempFile("test", ".jpg", File(rootPath))
+			createTempFile("test2", ".jpg", File(rootPath))
+			createTempFile("test3", ".txt", File(rootPath))
+			createTempFile("test4", ".dat", File(rootPath))
+			createTempFile("test5", ".gif", File(rootPath))
+			createTempFile("test6", ".png", File(rootPath))
+
+			val controller = object : DesktopController(listOf(rootPath), properties) {
+				suspend fun test() {
+					detectNewPics()
+				}
+			}
+			var statistics = controller.getStatistics()
+			Assertions.assertEquals(0, statistics.getFoundPicsNum(), "Before start there shouldn't be any found pics")
+			Assertions.assertEquals(0, statistics.getFoundObjects().size, "Before start there shouldn't be any found objects")
+			Assertions.assertEquals(0, statistics.getErrors().size, "Before start there shouldn't be any errors")
+			runBlocking {
+				controller.test()
+				while (controller.detections.size != picsNum) sleep(1000)
+				statistics = controller.getStatistics()
+				Assertions.assertEquals(picsNum, statistics.getFoundPicsNum(), "Invalid found pics statistics")
+				Assertions.assertEquals(0, statistics.getFoundObjects().size, "Invalid found objects statistics")
+				Assertions.assertEquals(0, statistics.getErrors().size, "Invalid errors statistics")
+			}
+		} catch (e: Exception) {
+			fail("The test aborted: $e")
+		}
+	}
+
+	@Test
+	@DisplayName("Errors statistics")
+	fun errsStat() {
+		try {
+			val picsNum = 4
+			val errsNum = 2
+			createTempFile("test", ".jpg", File(rootPath))
+			createTempFile("test2", ".jpg", File(rootPath))
+			createTempFile("test3", ".txt", File(rootPath))
+			createTempFile("test4", ".dat", File(rootPath))
+			createTempFile("test5", ".gif", File(rootPath))
+			createTempFile("test6", ".png", File(rootPath))
+
+			val controller = object : DesktopController(listOf(rootPath), properties) {
+				suspend fun test() {
+					detectNewPics()
+					detections["bla1"] = Detection("bla-bla1").also { it.error = "Error1" }
+					detections["bla2"] = Detection("bla-bla2").also { it.error = "Error2" }
+				}
+			}
+			runBlocking {
+				controller.test()
+				while (controller.detections.size != picsNum + errsNum) sleep(1000)
+				val statistics = controller.getStatistics()
+				Assertions.assertEquals(errsNum, statistics.getErrors().size, "Invalid errors number")
+			}
+		} catch (e: Exception) {
+			fail("The test aborted: $e")
 		}
 	}
 }
