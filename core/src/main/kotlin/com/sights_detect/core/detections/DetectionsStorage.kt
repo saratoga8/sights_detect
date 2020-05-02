@@ -10,7 +10,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.lang.reflect.Type
 
-internal class DetectionsStorage<T>(private val path: String = "detections.json"): Logging {
+class DetectionsStorage<T>(private val path: String = "detections.json"): Logging {
 	fun save(detections: T, type: Type) {
 		logger.debug("Saving detections in ${File(path).absolutePath}")
 

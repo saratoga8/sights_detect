@@ -65,7 +65,7 @@ internal class GoogleObjSeekerTest {
 	@CsvSource("https://cloud.google.com/vision/images/rushmore.jpg, Mount Rushmore National Memorial, Mount Rushmore")
 	fun `Detect landmark with 2 descriptions`(url: String, description1: String, description2: String) {
 		try {
-			val downloadedFile = downloadPic(url)
+			val downloadedFile = downloadPic(url, rootPath, picFile)
 			val found = runBlocking { GoogleObjSeeker(downloadedFile.absolutePath, properties).find() }
 			Assertions.assertEquals(1, found.size, "There should be only one detection")
 			val detection = found[0]
@@ -84,7 +84,7 @@ internal class GoogleObjSeekerTest {
 	@ValueSource(strings = ["https://media.istockphoto.com/photos/slice-cucumber-in-squar-white-cup-on-wooden-table-picture-id640908364"])
 	fun noLandMarks(url: String) {
 		try {
-			val downloadedFile = downloadPic(url)
+			val downloadedFile = downloadPic(url, rootPath, picFile)
 			val found = runBlocking { GoogleObjSeeker(downloadedFile.absolutePath, properties).find() }
 			Assertions.assertEquals(1, found.size, "There should be only one detection")
 			Assertions.assertEquals("$downloadedFile; []; NO", found[0].toString(), "Image $url HAS landmark")
@@ -108,14 +108,16 @@ internal class GoogleObjSeekerTest {
 		}
 	}
 
-	@Throws(IOException::class)
-	private fun downloadPic(url: String): File {
-		val file = File(rootPath, picFile)
-		val readableByteChannel: ReadableByteChannel = Channels.newChannel(URL(url).openStream())
-		val fileOutputStream = FileOutputStream(file)
-		fileOutputStream.channel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE)
-		Assertions.assertTrue(file.exists() && file.length() > 0, "Can't download the file $url")
-		return file
+	companion object {
+		@Throws(IOException::class)
+		fun downloadPic(url: String, rootPath: String, picFile: String): File {
+			val file = File(rootPath, picFile)
+			val readableByteChannel: ReadableByteChannel = Channels.newChannel(URL(url).openStream())
+			val fileOutputStream = FileOutputStream(file)
+			fileOutputStream.channel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE)
+			Assertions.assertTrue(file.exists() && file.length() > 0, "Can't download the file $url")
+			return file
+		}
 	}
 
 	@Disabled

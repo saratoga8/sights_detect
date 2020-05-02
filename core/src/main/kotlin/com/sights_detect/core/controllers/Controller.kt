@@ -15,14 +15,14 @@ import java.lang.reflect.Type
 import java.util.*
 
 
-internal abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
+abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	var detections: Hashtable<String, Detection> = Hashtable()
 		protected set
 	protected abstract val storage: DetectionsStorage<Hashtable<String, Detection>>
 	protected abstract val properties: Properties
 	private val type: Type = object : TypeToken<Hashtable<String, Detection>>() {}.type
 
-	protected val seekers: MutableList<Seeker<Detection>> = mutableListOf()
+	internal val seekers: MutableList<Seeker<Detection>> = mutableListOf()
 
 	fun getStatistics(): Statistics = StatisticsData(detections.values.toList())
 
@@ -77,11 +77,11 @@ internal abstract class Controller<in T>(private val paths: Iterable<T>): Loggin
 		return seekers.map { CoroutineScope(Dispatchers.IO).async { it.find() } }
 	}
 
-	protected open fun buildObjSeekers(paths: List<String>): Set<Seeker<Detection>> {
+	internal open fun buildObjSeekers(paths: List<String>): Set<Seeker<Detection>> {
 		return ObjectSeekersFactory.getObjSeekers(paths, properties).toSet()
 	}
 
-	protected open fun buildPicSeekers(): Set<Seeker<Detection>> {
+	internal open fun buildPicSeekers(): Set<Seeker<Detection>> {
 		val picSeekers: MutableSet<Seeker<Detection>> = mutableSetOf()
 		paths.forEach { picSeekers.addAll(PicSeekersFactory.getPicSeekers(it.toString())) }
 		return picSeekers

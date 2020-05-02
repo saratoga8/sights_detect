@@ -1,18 +1,14 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+    id 'base'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
 }
 allprojects {
-   repositories {
-   	jcenter()
-   }
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
 }
 subprojects {
     version = '1.0'
-}
-repositories {
-    mavenCentral()
-}
-dependencies {
-    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.3.61'
 }
 

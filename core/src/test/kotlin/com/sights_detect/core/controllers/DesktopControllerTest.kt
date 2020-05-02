@@ -5,11 +5,14 @@ import com.sights_detect.core.detections.Detection
 import com.sights_detect.core.detections.Detections
 import com.sights_detect.core.detections.DetectionsStorage
 import com.sights_detect.core.seekers.Seeker
+import com.sights_detect.core.seekers.objects.google.GoogleObjSeekerTest
 import com.sights_detect.core.seekers.pics.DesktopFS
 import kotlinx.coroutines.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -26,10 +29,11 @@ class DesktopControllerTest {
 		@BeforeAll
 		@JvmStatic
 		internal fun before() {
-			val fileName = "google.properties"
-			val url = javaClass.classLoader.getResource(fileName)
-			Assertions.assertNotNull(url, "Can't find resource file $fileName")
-			properties.load(FileInputStream(url.path))
+//			val fileName = "google.properties"
+//			val url = javaClass.classLoader.getResource(fileName)
+//			Assertions.assertNotNull(url, "Can't find resource file $fileName")
+//			properties.load(FileInputStream(url.path))
+			properties.load(FileInputStream("/home/saratoga/progs/SightsDetect/core/src/test/resources/google.properties"))
 		}
 	}
 
@@ -371,6 +375,35 @@ class DesktopControllerTest {
 			}
 		} catch (e: Exception) {
 			fail("The test aborted: $e")
+		}
+	}
+
+	@ParameterizedTest
+	@DisplayName("Starting of controller")
+	@CsvSource("https://storage.googleapis.com/sights_detect/eiffel.jpg, Eiffel Tower")
+	fun startTest(url: String, description: String) {
+		try {
+			val downloadedFile = GoogleObjSeekerTest.downloadPic(url, rootPath, "pic.jpg")
+			val filesNum = 10
+			val paths = List(filesNum - 1) { rootPath + File.separator + "pic$it.jpg" }
+			paths.forEach { downloadedFile.copyTo(File(it)) }
+			paths.forEach { Assertions.assertTrue(File(it).exists(), "File $it doesn't exist") }
+			val controller = DesktopController(listOf(rootPath), properties)
+			controller.start()
+			for (i in 1..filesNum) {
+				if (controller.detections.size == filesNum)
+					if (controller.detections.values.all { it.state == Detections.FOUND }) {
+						Assertions.assertEquals(filesNum, controller.getStatistics().getFoundObjects().size, "Invalid number of found objects")
+						Assertions.assertEquals(filesNum, controller.getStatistics().getFoundPicsNum(), "Invalid number of found pictures")
+						Assertions.assertEquals(0, controller.getStatistics().getErrors().size, "There are errors")
+						controller.detections.forEach { Assertions.assertEquals(Detections.FOUND, it.value.state, "There shouldn't be any detected object") }
+						return
+					}
+				sleep(2000)
+			}
+			fail( "Detection process hasn't finished")
+		} catch (e: Exception) {
+			fail("The test aborted: " + e.message)
 		}
 	}
 }

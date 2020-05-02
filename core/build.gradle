@@ -5,9 +5,6 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
 }
 
 plugins {
@@ -36,7 +33,6 @@ dependencies {
     testCompile "io.ktor:ktor-server-tests:$ktor_version"
 }
 
-
 test {
     testLogging {
         showStandardStreams = true
@@ -50,8 +46,8 @@ test {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
+
 compileKotlin {
     kotlinOptions {
         jvmTarget = '1.6'
