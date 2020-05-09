@@ -3,8 +3,10 @@ package com.sights_detect.core.seekers.objects.google
 import io.ktor.client.features.ClientRequestException
 import io.ktor.client.features.HttpRequestTimeoutException
 import io.ktor.network.sockets.ConnectTimeoutException
+import org.apache.http.ConnectionClosedException
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.File
+import java.net.UnknownHostException
 import java.util.*
 
 internal open class GoogleVision(properties: Properties): Logging {
@@ -23,6 +25,12 @@ internal open class GoogleVision(properties: Properties): Logging {
 		}
 		catch (e: ConnectTimeoutException) {
 			exceptionResponse(e, "Connection to Google Vision Service timed out")
+		}
+		catch (e: ConnectionClosedException) {
+			exceptionResponse(e, "Connection to Google Vision Service has been closed")
+		}
+		catch (e: UnknownHostException) {
+			exceptionResponse(e, "Can connect to Google Vision Service")
 		}
 	}
 

@@ -29,20 +29,15 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	fun getDetections(): List<Detection> = detections.values.toList()
 
 	fun stop() {
-		GlobalScope.launch {
-			seekers.forEach { it.stop() }
-			while (seekers.isNotEmpty()) {
-				seekers.removeAll { it.isStopped() }
-			}
+		seekers.forEach { it.stop() }
+		while (seekers.isNotEmpty()) {
+			seekers.removeAll { it.isStopped() }
 		}
 	}
 
-	fun start() {
-		detections.clear()
-		GlobalScope.launch {
-			detectNewPics()
-			detectObjects()
-		}
+	suspend fun start() {
+		detectNewPics()
+		detectObjects()
 	}
 
 	protected suspend fun detectObjects() {

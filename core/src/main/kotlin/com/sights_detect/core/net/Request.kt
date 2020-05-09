@@ -16,16 +16,16 @@ import kotlinx.coroutines.cancel
 import org.apache.logging.log4j.kotlin.Logging
 import java.util.*
 
-internal open class Request(private val properties: Properties, requestTimeout: Long = 120000L, connectTimeout: Long = 30000L): Logging {
+internal open class Request(private val properties: Properties, requestTimeout: Long = 120000L, connectTimeout: Long = 30000L, socketTimeout: Long = 120000L): Logging {
 	private val client: HttpClient
 	private val usedKeys = listOf("host", "path", "key")
 
 	init {
 		checkProperties(properties, usedKeys)
-		client = getClient(requestTimeout, connectTimeout)
+		client = getClient(requestTimeout, connectTimeout, socketTimeout)
 	}
 
-	protected open fun getClient(requestTimeout: Long, connectTimeout: Long): HttpClient { // open only for tests
+	protected open fun getClient(requestTimeout: Long, connectTimeout: Long, socketTimeout: Long): HttpClient { // open only for tests
 		return HttpClient(Apache) {
 			install(JsonFeature) {
 				serializer = GsonSerializer {
@@ -36,6 +36,7 @@ internal open class Request(private val properties: Properties, requestTimeout: 
 			install(HttpTimeout) {
 				requestTimeoutMillis = requestTimeout
 				connectTimeoutMillis = connectTimeout
+				socketTimeoutMillis = socketTimeout
 			}
 //			install(Logging) {
 //				logger = Logger.DEFAULT

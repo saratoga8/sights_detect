@@ -136,7 +136,7 @@ internal class GoogleObjSeekerTest {
 	}
 
 	class RequestMock(private val properties: Properties, private val responseStr: String) : Request(properties) {
-		override fun getClient(requestTimeout: Long, connectTimeout: Long): HttpClient {
+		override fun getClient(requestTimeout: Long, connectTimeout: Long, socketTimeout: Long): HttpClient {
 			return HttpClient(MockEngine) {
 				install(JsonFeature) {
 					serializer = GsonSerializer {

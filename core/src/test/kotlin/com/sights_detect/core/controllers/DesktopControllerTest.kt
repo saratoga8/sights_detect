@@ -173,7 +173,7 @@ class DesktopControllerTest {
 	@DisplayName("Try to load detections from invalid path")
 	fun invalidPath() {
 		try {
-			class TestController : DesktopController(listOf(), properties) {
+			class TestController : DesktopController(listOf(rootPath), properties) {
 				override val storage = DetectionsStorage<Hashtable<String, Detection>>(rootPath + File.separator + "bla-bla.json")
 				fun test() {
 					loadDetections()
@@ -198,7 +198,7 @@ class DesktopControllerTest {
 		detections.forEach { detection -> File(path).copyTo(File(detection.path)) }
 		detections.forEach { detection -> Assertions.assertTrue(File(detection.path).exists(), "File ${detection.path} doesn't exist") }
 
-		class TestController: DesktopController(listOf(), properties) {
+		class TestController: DesktopController(listOf(rootPath), properties) {
 			suspend fun testFindObjs(detections: List<Detection>) {
 				super.findObjects(detections)
 			}
@@ -285,7 +285,7 @@ class DesktopControllerTest {
 		detections.forEach { detection -> File(path).copyTo(File(detection.path)) }
 		detections.forEach { detection -> Assertions.assertTrue(File(detection.path).exists(), "File ${detection.path} doesn't exist") }
 
-		class TestController: DesktopController(listOf(), properties) {
+		class TestController: DesktopController(listOf(rootPath), properties) {
 			suspend fun run() {
 				val foundDetections: Hashtable<String, Detection> = Hashtable()
 				detections.forEach { foundDetections[it.path] = it }
@@ -389,7 +389,7 @@ class DesktopControllerTest {
 			paths.forEach { downloadedFile.copyTo(File(it)) }
 			paths.forEach { Assertions.assertTrue(File(it).exists(), "File $it doesn't exist") }
 			val controller = DesktopController(listOf(rootPath), properties)
-			controller.start()
+			GlobalScope.launch { controller.start() }
 			for (i in 1..filesNum) {
 				if (controller.detections.size == filesNum)
 					if (controller.detections.values.all { it.state == Detections.FOUND }) {
