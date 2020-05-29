@@ -13,11 +13,12 @@ internal object PicSeekersFactory {
 		if (dir.list() == null || dir.list().isEmpty()) return listOf()
 
 		val seekers = mutableListOf<PicsSeeker>()
+		val files = dir.listFiles()
 		try {
-			if (dir.listFiles().any { it.isFile }) seekers.add(DesktopFS(path, recursive = false))
+			if (files.any { it.isFile }) seekers.add(DesktopFS(path, recursive = false))
 		}
 		catch (e: IllegalArgumentException) {}
-		seekers.addAll(dir.listFiles().filter { it.isDirectory && it.listFiles().isNotEmpty() }.map { DesktopFS(it.absolutePath) }.toList())
+		seekers.addAll(files.filter { it.isDirectory && it.list().isNotEmpty() }.map { DesktopFS(it.absolutePath) }.toList())
 		return seekers
 	}
 }

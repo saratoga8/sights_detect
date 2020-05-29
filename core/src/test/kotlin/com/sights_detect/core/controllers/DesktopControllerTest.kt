@@ -29,11 +29,11 @@ class DesktopControllerTest {
 		@BeforeAll
 		@JvmStatic
 		internal fun before() {
-//			val fileName = "google.properties"
-//			val url = javaClass.classLoader.getResource(fileName)
-//			Assertions.assertNotNull(url, "Can't find resource file $fileName")
-//			properties.load(FileInputStream(url.path))
-			properties.load(FileInputStream("/home/saratoga/progs/SightsDetect/core/src/test/resources/google.properties"))
+			val fileName = "google.properties"
+			val url = javaClass.classLoader.getResource(fileName)
+			Assertions.assertNotNull(url, "Can't find resource file $fileName")
+			properties.load(FileInputStream(url.path))
+//			properties.load(FileInputStream("/home/saratoga/progs/SightsDetect/core/src/test/resources/google.properties"))
 		}
 	}
 
@@ -236,7 +236,7 @@ class DesktopControllerTest {
 			Assertions.assertTrue(createTempDir(rootPath + File.separator + "empty").exists(), "Empty temp dir hasn't created")
 
 			class TestObjSeeker(dirPath: String, recursive: Boolean = true) : DesktopFS(dirPath, recursive) {
-				override fun getAllFiles(): List<File> {
+				override fun getAllFiles(): List<String> {
 					runBlocking { delay(3000) }
 					return listOf()
 				}
@@ -265,7 +265,7 @@ class DesktopControllerTest {
 				delay(1500)
 				controller.checkSeekersStopped(false)
 				controller.stop()
-				delay(200)
+				delay(300)
 				controller.checkSeekersStopped(true)
 			}
 		} catch (e: IOException) {

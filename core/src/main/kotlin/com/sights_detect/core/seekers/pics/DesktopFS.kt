@@ -17,14 +17,14 @@ internal open class DesktopFS(private val dirPath: String, private val recursive
 		val results = mutableListOf<Detection>()
 		for (pic_format in picFormats) {
 			if (stopped) break
-			results.addAll(getAllFiles().filter { it.extension.equals(pic_format, true) }.map { Detection(it.absolutePath) }.toList())
+			results.addAll(getAllFiles().filter { it.endsWith(pic_format, true) }.map { Detection(it) }.toList())
 		}
 		return results.also { stopped = true }
 	}
 
-	protected open fun getAllFiles(): List<File> {
-		if (recursive) return File(dirPath).walk().toList()
+	protected open fun getAllFiles(): List<String> {
+		if (recursive) return File(dirPath).walk().toList().map { it.absolutePath }
 		val files = File(dirPath).listFiles()
-		return files?.toList() ?: listOf()
+		return (files?.toList()?: listOf()).map { it.absolutePath }
 	}
 }

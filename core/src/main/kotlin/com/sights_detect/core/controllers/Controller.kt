@@ -11,6 +11,7 @@ import com.sights_detect.core.statistics.Statistics
 import com.sights_detect.core.statistics.StatisticsData
 import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.Logging
+import java.lang.Thread.sleep
 import java.lang.reflect.Type
 import java.util.*
 
@@ -60,7 +61,8 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	protected open fun findObjects(detections: List<Detection>): List<Deferred<List<Detection>>> {
 		val paths = detections.filter { it.state == Detections.UNKNOWN }.map { it.path }
 		val objSeekers = buildObjSeekers(paths)
-		return findBySeekers(objSeekers).also { seekers.addAll(objSeekers) }
+		val dispatcher = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors(), "Find Objects")
+		return findBySeekers(objSeekers, dispatcher).also { seekers.addAll(objSeekers) }
 	}
 
 	protected open fun findNewPics(): List<Deferred<List<Detection>>> {
@@ -68,8 +70,8 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 		return findBySeekers(picSeekers).also { seekers.addAll(picSeekers) }
 	}
 
-	private fun <T> findBySeekers(seekers: Set<Seeker<T>>): List<Deferred<List<T>>> {
-		return seekers.map { CoroutineScope(Dispatchers.IO).async { it.find() } }
+	private fun <T> findBySeekers(seekers: Set<Seeker<T>>, dispatcher: CoroutineDispatcher = Dispatchers.IO): List<Deferred<List<T>>> {
+		return seekers.map { CoroutineScope(dispatcher).async { sleep(1000); it.find() } }
 	}
 
 	internal open fun buildObjSeekers(paths: List<String>): Set<Seeker<Detection>> {
