@@ -322,7 +322,7 @@ class DesktopControllerTest {
 			createTempFile("test2", ".jpg", File(rootPath))
 			createTempFile("test3", ".txt", File(rootPath))
 			createTempFile("test4", ".dat", File(rootPath))
-			createTempFile("test5", ".gif", File(rootPath))
+			createTempFile("test5", ".jpeg", File(rootPath))
 			createTempFile("test6", ".png", File(rootPath))
 
 			val controller = object : DesktopController(listOf(rootPath), properties) {
@@ -336,7 +336,7 @@ class DesktopControllerTest {
 			Assertions.assertEquals(0, statistics.getErrors().size, "Before start there shouldn't be any errors")
 			runBlocking {
 				controller.test()
-				while (controller.detections.size != picsNum) sleep(1000)
+				while (controller.detections.size < picsNum) sleep(1000)
 				statistics = controller.getStatistics()
 				Assertions.assertEquals(picsNum, statistics.getFoundPicsNum(), "Invalid found pics statistics")
 				Assertions.assertEquals(0, statistics.getFoundObjects().size, "Invalid found objects statistics")
@@ -357,7 +357,7 @@ class DesktopControllerTest {
 			createTempFile("test2", ".jpg", File(rootPath))
 			createTempFile("test3", ".txt", File(rootPath))
 			createTempFile("test4", ".dat", File(rootPath))
-			createTempFile("test5", ".gif", File(rootPath))
+			createTempFile("test5", ".jpeg", File(rootPath))
 			createTempFile("test6", ".png", File(rootPath))
 
 			val controller = object : DesktopController(listOf(rootPath), properties) {

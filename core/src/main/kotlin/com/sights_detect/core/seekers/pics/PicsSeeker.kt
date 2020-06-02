@@ -6,7 +6,7 @@ import org.apache.logging.log4j.kotlin.Logging
 
 internal abstract class PicsSeeker: Seeker<Detection>, Logging {
 	val picFormats: Array<String>
-		get() = arrayOf("jpg", "jpeg", "png", "gif", "bmp", "webp", "raw", "ico", "pdf", "tiff")
+		get() = arrayOf("jpg", "jpeg", "png", "bmp", "webp", "raw", "tiff")
 
 	override fun isStopped(): Boolean = stopped
 

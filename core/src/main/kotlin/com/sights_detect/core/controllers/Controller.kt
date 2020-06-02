@@ -65,13 +65,19 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 		return findBySeekers(objSeekers, dispatcher).also { seekers.addAll(objSeekers) }
 	}
 
+
+
 	protected open fun findNewPics(): List<Deferred<List<Detection>>> {
 		val picSeekers = buildPicSeekers()
 		return findBySeekers(picSeekers).also { seekers.addAll(picSeekers) }
 	}
 
-	private fun <T> findBySeekers(seekers: Set<Seeker<T>>, dispatcher: CoroutineDispatcher = Dispatchers.IO): List<Deferred<List<T>>> {
-		return seekers.map { CoroutineScope(dispatcher).async { sleep(1000); it.find() } }
+	private fun <T> findBySeekers(seekers: Set<Seeker<T>>, dispatcher: CoroutineDispatcher = Dispatchers.IO, sleepSeconds: Int = 0): List<Deferred<List<T>>> {
+		return seekers.map { CoroutineScope(dispatcher).async {
+			if (sleepSeconds != 0)
+				sleep(1000)
+			it.find()
+		} }
 	}
 
 	internal open fun buildObjSeekers(paths: List<String>): Set<Seeker<Detection>> {
