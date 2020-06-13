@@ -2,6 +2,8 @@ package com.sights_detect.core.seekers.objects.google
 
 import com.sights_detect.core.net.Request
 import kotlinx.coroutines.runBlocking
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -12,7 +14,6 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import java.io.FileInputStream
 import java.util.*
-import kotlin.test.assertFails
 import kotlin.test.fail
 
 internal class GoogleVisionTest {
@@ -85,7 +86,7 @@ internal class GoogleVisionTest {
 			val vision = GoogleVision(properties)
 			Assert.assertEquals("Shouldn't be any error string", "", vision.error)
 			val response = vision.doRequest(path)
-			Assert.assertEquals("Invalid error message", vision.error, "HTTP request to Google Vision Service has failed")
+			assertThat("Invalid error message", vision.error, Matchers.startsWith("HTTP request to Google Vision Service has failed"))
 			Assert.assertEquals("Invalid response", expected, "{responses: ${response.responses}}")
 		}
 	}
@@ -98,6 +99,6 @@ internal class GoogleVisionTest {
 		}
 		val responses = vision.doRequest(path).responses ?: fail("Response is NULL")
 		Assert.assertTrue("Time out should return empty results", responses.isEmpty())
-		Assert.assertEquals("HTTP request to Google Vision Service timed out", vision.error)
+		assertThat("Invalid error message", vision.error, Matchers.startsWith("HTTP request to Google Vision Service timed out"))
 	}
 }

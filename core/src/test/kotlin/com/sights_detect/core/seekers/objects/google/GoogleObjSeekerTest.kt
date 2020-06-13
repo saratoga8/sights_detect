@@ -46,9 +46,6 @@ internal class GoogleObjSeekerTest {
 	@BeforeEach
 	fun setUp() {
 		try {
-//			val keyPath: String = System.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-//			Assertions.assertFalse(TextUtils.isEmpty(keyPath), "No env var GOOGLE_APPLICATION_CREDENTIALS")
-//			Assertions.assertTrue(File(keyPath).exists(), "The file with google's account key $keyPath doesn't exist")
 			rootPath = createTempDir("tests").absolutePath
 		} catch (e: IOException) {
 			fail("Cant't create temp dir: " + e.message)
@@ -90,6 +87,21 @@ internal class GoogleObjSeekerTest {
 			Assertions.assertEquals("$downloadedFile; []; NO", found[0].toString(), "Image $url HAS landmark")
 			Assertions.assertEquals(Detections.NO, found[0].state)
 		} catch (e: Exception) {
+			fail("Test aborted because of: $e")
+		}
+	}
+
+	@Test
+	@DisplayName("Empty image files")
+	fun emptyImgFiles() {
+		try {
+			val path = createTempFile("pic", ".jpg", File(rootPath)).absolutePath
+			val found = runBlocking { GoogleObjSeeker(path, properties).find() }
+			Assertions.assertEquals(1, found.size, "Invalid number of detections")
+			Assertions.assertEquals(found.last().state, Detections.UNKNOWN, "Invalid detection's state")
+			Assertions.assertFalse(found.first().error.isEmpty(), "Detection should has error")
+		}
+		catch (e: Exception) {
 			fail("Test aborted because of: $e")
 		}
 	}
@@ -147,7 +159,7 @@ internal class GoogleObjSeekerTest {
 				engine {
 					addHandler { request ->
 						when (request.url) {
-							Url("https://${properties.getProperty("host")}/${properties.getProperty("path")}?key=${properties.getProperty("key")}") -> {
+							Url("${properties.getProperty("host")}/${properties.getProperty("path")}?key=${properties.getProperty("key")}") -> {
 								val responseHeaders = headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))
 								respond(responseStr, headers = responseHeaders)
 							}

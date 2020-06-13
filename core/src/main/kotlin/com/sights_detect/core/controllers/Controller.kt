@@ -49,6 +49,7 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 					prevDetection.state = found.state
 					prevDetection.descriptions = found.descriptions
 				}
+				if (found.error.isNotEmpty()) { prevDetection.error = found.error }
 			} else
 				logger.error("Detection instance of ${found.path} has removed")
 		}
@@ -62,7 +63,7 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 		val paths = detections.filter { it.state == Detections.UNKNOWN }.map { it.path }
 		val objSeekers = buildObjSeekers(paths)
 		val dispatcher = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors(), "Find Objects")
-		return findBySeekers(objSeekers, dispatcher).also { seekers.addAll(objSeekers) }
+		return findBySeekers(objSeekers, dispatcher, 1000L).also { seekers.addAll(objSeekers) }
 	}
 
 
@@ -72,10 +73,9 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 		return findBySeekers(picSeekers).also { seekers.addAll(picSeekers) }
 	}
 
-	private fun <T> findBySeekers(seekers: Set<Seeker<T>>, dispatcher: CoroutineDispatcher = Dispatchers.IO, sleepSeconds: Int = 0): List<Deferred<List<T>>> {
+	private fun <T> findBySeekers(seekers: Set<Seeker<T>>, dispatcher: CoroutineDispatcher = Dispatchers.IO, sleepSeconds: Long = 0): List<Deferred<List<T>>> {
 		return seekers.map { CoroutineScope(dispatcher).async {
-			if (sleepSeconds != 0)
-				sleep(1000)
+			if (sleepSeconds != 0L) { sleep(sleepSeconds) }
 			it.find()
 		} }
 	}

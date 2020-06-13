@@ -38,7 +38,8 @@ fun main(args: Array<String>) {
             val stats = controller.getStatistics()
             println("Pics: ${stats.getFoundPicsNum()}")
             println("Objs: ${ stats.getFoundObjects() }")
-            println("Errors: ${stats.getErrors()}")
+            stats.getErrors().forEach { println("Error: ${it.error}") }
+
         } catch (e: InvalidParameterException) {
             println("ERROR: $e")
         }

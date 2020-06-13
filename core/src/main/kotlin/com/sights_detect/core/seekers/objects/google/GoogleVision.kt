@@ -29,25 +29,25 @@ internal open class GoogleVision(properties: Properties): Logging {
 			request.post(buildRequest(imgPath))
 		}
 		catch (e: ClientRequestException) {
-			exceptionResponse(e, "HTTP request to Google Vision Service has failed")
+			exceptionResponse(e, "HTTP request to Google Vision Service has failed:\n\t$e")
 		}
 		catch (e: HttpRequestTimeoutException) {
-			exceptionResponse(e, "HTTP request to Google Vision Service timed out")
+			exceptionResponse(e, "HTTP request to Google Vision Service timed out:\n\t$e")
 		}
 		catch (e: ConnectTimeoutException) {
-			exceptionResponse(e, "Connection to Google Vision Service timed out")
+			exceptionResponse(e, "Connection to Google Vision Service timed out:\n\t$e")
 		}
 		catch (e: ConnectionClosedException) {
-			exceptionResponse(e, "Connection to Google Vision Service has been closed")
+			exceptionResponse(e, "Connection to Google Vision Service has been closed:\n\t$e")
 		}
 		catch (e: UnknownHostException) {
-			exceptionResponse(e, "Cant connect to Google Vision Service")
+			exceptionResponse(e, "Cant connect to Google Vision Service:\n\t$e")
 		}
 		catch (e: IOException) {
-			exceptionResponse(e, "Cant resize the image $imgPath")
+			exceptionResponse(e, "Cant resize the image $imgPath:\n\t$e")
 		}
 		catch (e: IllegalArgumentException) {
-			exceptionResponse(e, "Cant build request with pic $imgPath")
+			return exceptionResponse(e, "Cant build request with pic $imgPath:\n\t$e")
 		}
 	}
 

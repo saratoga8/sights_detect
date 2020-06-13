@@ -18,6 +18,7 @@ dependencies {
     compile project(":core")
     testImplementation group: 'io.cucumber', name: 'cucumber-java8', version: '5.7.0'
     testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '5.7.0'
+    testCompile 'org.mock-server:mockserver-netty:5.10.0'
 }
 
 compileKotlin {

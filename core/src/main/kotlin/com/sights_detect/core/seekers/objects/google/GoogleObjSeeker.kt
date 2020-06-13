@@ -17,7 +17,7 @@ internal class GoogleObjSeeker(private val path: String, private val properties:
 			return if (File(path).exists()) {
 				stopped = false
 				val response = runBlocking { vision.doRequest(path) }
-				listOf(createDetections(response))
+				listOf(createDetection(response, vision.error))
 			} else listOf(Detection(path, "File of picture $path DOESN'T exist"))
 		} else logger.error("Google Cloud Vision API info from properties file hasn't loaded")
 		return listOf()
@@ -28,7 +28,8 @@ internal class GoogleObjSeeker(private val path: String, private val properties:
 		stopped = true
 	}
 
-	private fun createDetections(googleResponse: GoogleResponse): Detection {
+	private fun createDetection(googleResponse: GoogleResponse, err: String): Detection {
+		if(err.isNotEmpty()) { return Detection(path, err) }
 		val detection = Detection(path)
 		val responses = googleResponse.responses
 		if (!responses.isNullOrEmpty()) {

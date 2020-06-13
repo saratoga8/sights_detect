@@ -62,10 +62,11 @@ internal open class Request(private val properties: Properties, requestTimeout: 
 
 	 private fun HttpRequestBuilder.buildURL() {
 		 url {
-			 host = properties.getProperty("host")
+			 host = properties.getProperty("host").removePrefix("https://").removePrefix("http://")
 			 path(properties.getProperty("path"))
 			 parameters.append("key", properties.getProperty("key"))
-			 protocol = URLProtocol.HTTPS
+			 if (properties.getProperty("host").startsWith("https://"))
+				 protocol = URLProtocol.HTTPS
 		 }
 	}
 }
