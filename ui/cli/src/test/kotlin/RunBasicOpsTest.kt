@@ -32,17 +32,16 @@ class RunBasicOpsTest {
 					.`when`(
 							HttpRequest.request()
 									.withMethod("POST")
-									.withPath("/v1/images:annotate")
-									.withQueryStringParameter("key", "blabla")
-//									.withHeaders(Header.header("Content-Type", "application/json"))
-									.withBody("{username: 'bla'}")
+//									.withPath("/v1/images:annotate")
+//									.withQueryStringParameter("key", "blabla")
+//									.withHeaders(Header.header("Content-Type", "application/json"), Header.header("Content-Encoding", "gzip"))
+//									.withBody("{username: 'bla'}")
 					)
 					.respond(
 							HttpResponse.response()
 									.withStatusCode(200)
 									.withBody("{yes}")
 					)
-
 		}
 
 		@AfterClass

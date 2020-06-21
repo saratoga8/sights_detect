@@ -14,10 +14,11 @@ application {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile project(":core")
-    testImplementation group: 'io.cucumber', name: 'cucumber-java8', version: '5.7.0'
-    testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '5.7.0'
+    testImplementation group: 'io.cucumber', name: 'cucumber-java8', version: '6.1.1'
+    testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '6.1.1'
+    compile "org.slf4j:slf4j-simple:1.7.30"
     testCompile 'org.mock-server:mockserver-netty:5.10.0'
 }
 
@@ -28,6 +29,12 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.6"
 }
 
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
 jar {
     manifest { attributes 'Main-Class': 'MainKt' }
     from {
@@ -35,9 +42,27 @@ jar {
     }
 }
 
+
+task cucumber() {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = ['--plugin', 'pretty', '--glue', 'gradle.cucumber', 'src/test/resources']
+        }
+    }
+}
+
 task runWithJavaExec(type: JavaExec) {
     group = "Execution"
     description = "Run the main class with JavaExecTask"
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.test.resources + sourceSets.main.output + sourceSets.test.output + sourceSets.main.resources
     main = "MainKt"
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
 }

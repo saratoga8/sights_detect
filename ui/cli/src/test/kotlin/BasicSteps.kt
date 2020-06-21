@@ -10,8 +10,10 @@ class BasicSteps : En {
 	init {
 		Given("^there is directory with (\\d+) picture files (without|with) landmarks$") { num: Int, landmark: String ->
 			tmpDir = createTempDir("tests")
+			val file = File("/home/saratoga/progs/SightsDetect/ui/cli/src/test/resources/man.jpg")
 			for (i in 1 until num) {
-				val path: String = createTempFile("pic$i", ".jpg", tmpDir).absolutePath
+				var path = "${tmpDir.absolutePath}${File.separator}pic$i.jpg"
+				path = file.copyTo(File(path)).absolutePath
 				if(landmark == "with")
 					detections.add(Detection(path, Detections.FOUND, listOf("Landmark$i")))
 				if(landmark == "without")
@@ -24,7 +26,9 @@ class BasicSteps : En {
 			val fileName = "google.properties"
 			val url = javaClass.classLoader.getResource(fileName)
 
-			main(arrayOf(tmpDir.absolutePath, "/home/saratoga/progs/SightsDetect/ui/cli/src/test/resources/$fileName"))
+			println(tmpDir.absolutePath)
+			Thread.sleep(30000)
+//			main(arrayOf(tmpDir.absolutePath, "/home/saratoga/progs/SightsDetect/ui/cli/src/test/resources/$fileName"))
 		}
 
 		Then("^program found (\\d+) picture files (without|with) landmarks$") { num: Int, landmark: String  ->
