@@ -1,0 +1,70 @@
+{
+  "responses": [
+    {
+      "webDetection": {
+        "webEntities": [
+          {
+            "entityId": "/m/07znj",
+            "score": 0.7099,
+            "description": "Vector graphics"
+          },
+          {
+            "entityId": "/m/03g09t",
+            "score": 0.7036,
+            "description": "Clip art"
+          }
+        ],
+        "fullMatchingImages": [
+          {
+            "url": "https://thumbs.dreamstime.com/b/katolik-kristendomen-korskonstruktion-korssymbol-jesuskrist-fredssymbol-ikon-religi%C3%B6s-symbol-korset-den-kristna-religionens-166482068.jpg"
+          },
+          {
+            "url": "https://eouve.com.br/svg_icons/light/accessibility.svg"
+          }
+        ],
+        "partialMatchingImages": [
+          {
+            "url": "https://image.winudf.com/v2/image1/Y29tLm1hcmluZ2Eudm91ZGVvbmlidXNfc2NyZWVuXzZfMTU4MDc0MDAzMV8wNzk/screen-6.jpg?fakeurl=1&type=.jpg"
+          },
+          {
+            "url": "https://cdn.xelf.io/projects/20200323/a36e8014-db5d-4309-8020-253fe39d8069/a36e8014-db5d-4309-8020-253fe39d8069_thumbNail.png"
+          }
+        ],
+        "pagesWithMatchingImages": [
+          {
+            "url": "https://www.clipart.email/clipart/transparent-cross-clipart-10506.html",
+            "pageTitle": "\u003cb\u003eTransparent Cross\u003c/b\u003e Clipart",
+            "fullMatchingImages": [
+              {
+                "url": "https://cdn.clipart.email/c48584b4f3b651f70422592b62ec6043_drawing-tattoo-art-christian-cross-cross-clipart-black-hd-png-_860-1081.png"
+              }
+            ]
+          },
+          {
+            "url": "https://www.pngitem.com/middle/hoRmTwJ_drawing-tattoo-art-christian-cross-cross-clipart-black/",
+            "pageTitle": "\u003cb\u003eDrawing Tattoo\u003c/b\u003e Art Christian \u003cb\u003eCross\u003c/b\u003e - \u003cb\u003eCross\u003c/b\u003e Clipart Black, HD Png ...",
+            "fullMatchingImages": [
+              {
+                "url": "https://www.pngitem.com/pimgs/m/431-4316346_drawing-tattoo-art-christian-cross-cross-clipart-black.png"
+              }
+            ]
+          }
+        ],
+        "visuallySimilarImages": [
+          {
+            "url": "http://clipart-library.com/images_k/cross-silhouette-tattoo/cross-silhouette-tattoo-12.png"
+          },
+          {
+            "url": "https://www.pngitem.com/pimgs/m/431-4316346_drawing-tattoo-art-christian-cross-cross-clipart-black.png"
+          }
+        ],
+        "bestGuessLabels": [
+          {
+            "label": "cross drawing transparent",
+            "languageCode": "en"
+          }
+        ]
+      }
+    }
+  ]
+}

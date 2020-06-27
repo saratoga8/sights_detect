@@ -19,7 +19,7 @@ dependencies {
     testImplementation group: 'io.cucumber', name: 'cucumber-java8', version: '6.1.1'
     testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '6.1.1'
     compile "org.slf4j:slf4j-simple:1.7.30"
-    testCompile 'org.mock-server:mockserver-netty:5.10.0'
+    testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.26.3"
 }
 
 compileKotlin {

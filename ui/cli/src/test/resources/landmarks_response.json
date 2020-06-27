@@ -1,0 +1,84 @@
+{
+  "responses": [
+    {
+      "landmarkAnnotations": [
+        {
+          "mid": "/m/01n5gp",
+          "description": "Christ Church Cathedral",
+          "score": 0.8464767,
+          "boundingPoly": {
+            "vertices": [
+              {
+                "x": 268,
+                "y": 47
+              },
+              {
+                "x": 1478,
+                "y": 47
+              },
+              {
+                "x": 1478,
+                "y": 380
+              },
+              {
+                "x": 268,
+                "y": 380
+              }
+            ]
+          },
+          "locations": [
+            {
+              "latLng": {
+                "latitude": 53.343512999999994,
+                "longitude": -6.2710602
+              }
+            }
+          ]
+        }
+      ],
+      "webDetection": {
+        "webEntities": [
+          {
+            "entityId": "/m/01kht3",
+            "score": 1.138335,
+            "description": "St. Patrick's Cathedral"
+          },
+          {
+            "entityId": "/m/01n5gp",
+            "score": 0.612975,
+            "description": "Christ Church Cathedral"
+          }
+        ],
+        "partialMatchingImages": [
+          {
+            "url": "https://pic.pimg.tw/allison1951/1469516432-641359034_n.jpg"
+          }
+        ],
+        "pagesWithMatchingImages": [
+          {
+            "url": "https://allison1951.pixnet.net/blog/post/449876438-%E2%80%BB%E9%83%BD%E6%9F%8F%E6%9E%97%E5%B8%82%E5%8D%80%E8%A7%80%E5%85%89%EF%BC%8D2-%EF%BC%88%E5%9F%BA%E7%9D%A3%E5%A4%A7%E6%95%99%E5%A0%82-%E3%80%82%E8%81%96%E6%B4%BE%E7%BF%A0",
+            "pageTitle": "※都柏林市區觀光－2 （基督大教堂。聖派翠克大教堂。波茵河遺跡 ...",
+            "partialMatchingImages": [
+              {
+                "url": "https://pic.pimg.tw/allison1951/1469516432-641359034_n.jpg"
+              }
+            ]
+          }
+        ],
+        "visuallySimilarImages": [
+          {
+            "url": "https://farm1.staticflickr.com/202/523302091_d7a1fa2c4a_b.jpg"
+          },
+          {
+            "url": "https://www.dublinpass.com/images_lib/548846393_newchristchurch2.jpg"
+          }
+        ],
+        "bestGuessLabels": [
+          {
+            "label": "christ church cathedral"
+          }
+        ]
+      }
+    }
+  ]
+}

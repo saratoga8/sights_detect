@@ -1,10 +1,12 @@
 import com.sights_detect.core.controllers.DesktopController
+import com.sights_detect.core.statistics.Statistics
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.security.InvalidParameterException
 import java.util.*
+import kotlin.system.exitProcess
 
 class Main(args: Array<String>) {
     val properties: Properties = Properties()
@@ -28,6 +30,8 @@ class Main(args: Array<String>) {
     }
 }
 
+var stats: Statistics? = null
+
 fun main(args: Array<String>) {
     if (args.isNotEmpty() && args.size > 1) {
         try {
@@ -35,15 +39,13 @@ fun main(args: Array<String>) {
             runBlocking {
                 controller.start()
             }
-            val stats = controller.getStatistics()
-            println("Pics: ${stats.getFoundPicsNum()}")
-            println("Objs: ${ stats.getFoundObjects() }")
-            stats.getErrors().forEach { println("Error: ${it.error}") }
-
+            stats = controller.getStatistics()
+            return
         } catch (e: InvalidParameterException) {
-            println("ERROR: $e")
+            System.err.println("ERROR: $e")
         }
     }
     else
-        println("ERROR: Invalid parameters number. Should be: dir1, dir2, ..., properties file path")
+        System.err.println("ERROR: Invalid parameters number. Should be: dir1, dir2, ..., properties file path")
+    exitProcess(1)
 }

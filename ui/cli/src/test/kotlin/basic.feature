@@ -3,7 +3,7 @@ Feature: Basic operations
   Scenario Outline: Finding all picture files in a directory
 	Given there is directory with <num> picture files without landmarks
 	When user runs program
-	Then program found <num> picture files without landmarks
+	Then program found <num> picture files
 
 	Examples:
 	  | num |
