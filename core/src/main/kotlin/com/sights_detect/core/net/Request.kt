@@ -3,7 +3,9 @@ package com.sights_detect.core.net
 import com.sights_detect.core.seekers.objects.google.GoogleResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.BrowserUserAgent
 import io.ktor.client.features.HttpTimeout
+import io.ktor.client.features.UserAgent
 import io.ktor.client.features.json.GsonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.DEFAULT
@@ -21,7 +23,7 @@ import java.util.*
 
 internal open class Request(private val properties: Properties, requestTimeout: Long = 120000L, connectTimeout: Long = 30000L, socketTimeout: Long = 120000L): Logging {
 	private val client: HttpClient
-	private val usedKeys = listOf("host", "path", "key")
+	private val usedKeys = listOf("host", "path", "key", "compression")
 
 	init {
 		checkProperties(properties, usedKeys)
@@ -45,6 +47,9 @@ internal open class Request(private val properties: Properties, requestTimeout: 
 				logger = Logger.DEFAULT
 				level = LogLevel.ALL
 			}
+			install(UserAgent) {
+				BrowserUserAgent()
+			}
 		}
 	}
 
@@ -55,7 +60,7 @@ internal open class Request(private val properties: Properties, requestTimeout: 
 			buildURL()
 			contentType(ContentType.Application.Json)
 			body = bodyObj
-			header("Content-Encoding", "gzip")
+			if(properties.getProperty("compression") == "yes") header("Content-Encoding", "gzip")
 		}.also { client.close()	}
 	}
 
