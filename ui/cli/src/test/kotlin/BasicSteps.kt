@@ -30,7 +30,7 @@ class BasicSteps : En {
 			val path = properties.getProperty("path")
 			val key = properties.getProperty("key")
 			val fileName = if(withLandmarks) "landmarks_response.json" else "no_landmarks_response.json"
-			val data: String = getResourceURL(fileName).readText(Charsets.UTF_8)
+			val data: String = getResourceURL(fileName).readText(Charsets.UTF_8).replace("<description1>", "Description")
 
 			stubFor(post(urlEqualTo("/$path?key=$key"))
 					.withHeader("Content-Type", equalTo("application/json"))
@@ -47,6 +47,14 @@ class BasicSteps : En {
 			Assert.assertNotNull("There is no stats, the result of program run", statistics)
 			Assert.assertEquals("Invalid number of found pic files", num, stats!!.getFoundPicsNum())
 			Assert.assertTrue("There are errors in program's run: ${stats!!.getErrors()}", stats!!.getErrors().isEmpty())
+		}
+
+		Then("program found {int} landmarks") { num: Int ->
+			val foundLandmarks = statistics!!.getFoundObjects()
+			Assert.assertEquals("Invalid number of found landmarks", num, foundLandmarks.size)
+			for(i in 0 until num) {
+				Assert.assertTrue("There is no landmark 'Bla' between found ones: $foundLandmarks", foundLandmarks.map { it.foundDetection.descriptions.last() }.contains("Bla"))
+			}
 		}
 	}
 

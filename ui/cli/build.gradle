@@ -62,7 +62,12 @@ task runWithJavaExec(type: JavaExec) {
 }
 
 test {
-    testLogging {
-        showStandardStreams = true
+//    testLogging {
+//        showStandardStreams = false
+//    }
+    reports {
+        html.enabled = true
     }
+//    useJUnitPlatform()
+    maxParallelForks = Runtime.runtime.availableProcessors()
 }
