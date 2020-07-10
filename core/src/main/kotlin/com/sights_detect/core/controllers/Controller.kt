@@ -62,7 +62,7 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	protected open fun findObjects(detections: List<Detection>): List<Deferred<List<Detection>>> {
 		val paths = detections.filter { it.state == Detections.UNKNOWN }.map { it.path }
 		val objSeekers = buildObjSeekers(paths)
-		val dispatcher = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors(), "Find Objects")
+		val dispatcher: ExecutorCoroutineDispatcher = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors(), "Find Objects")
 		return findBySeekers(objSeekers, dispatcher, 1000L).also { seekers.addAll(objSeekers) }
 	}
 

@@ -1,13 +1,14 @@
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import io.cucumber.junit.Cucumber
 import io.cucumber.junit.CucumberOptions
+import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.runner.RunWith
 
 
 @RunWith(Cucumber::class)
 @CucumberOptions(
-		features = ["src/test/kotlin/basic.feature"], strict = true
+		features = ["src/test/kotlin/basic.feature"], strict = true, plugin = ["pretty", "html:target/cucumber.html"]
 )
 class RunBasicOpsTest {
 
@@ -17,13 +18,15 @@ class RunBasicOpsTest {
 		@ClassRule
 		@JvmField
 		val wireMockRule = WireMockRule(5555)
-	}
-//		@BeforeClass
-//		@JvmStatic
-//		fun startServer() {}
+
+		@BeforeClass
+		@JvmStatic
+		fun startServer() {
+			wireMockRule.resetAll()
+		}
 
 //		@AfterClass
 //		@JvmStatic
 //		fun stopServer() {}
-//	}
+	}
 }

@@ -4,7 +4,7 @@
       "landmarkAnnotations": [
         {
           "mid": "/m/01n5gp",
-          "description": "Christ Church Cathedral",
+          "description": "<description>",
           "score": 0.8464767,
           "boundingPoly": {
             "vertices": [
@@ -46,7 +46,7 @@
           {
             "entityId": "/m/01n5gp",
             "score": 0.612975,
-            "description": "Christ Church Cathedral"
+            "description": "<description2>"
           }
         ],
         "partialMatchingImages": [

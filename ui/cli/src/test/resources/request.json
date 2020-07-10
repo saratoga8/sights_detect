@@ -1,0 +1,20 @@
+{
+  "requests": [
+    {
+      "image": {
+        "content": "<content>"
+      },
+      "features": [
+        {
+          "type": "LANDMARK_DETECTION",
+          "maxResults": 1
+        },
+        {
+          "type": "WEB_DETECTION",
+          "maxResults": 2
+        }
+      ]
+    }
+  ]
+}
+
