@@ -31,3 +31,19 @@ Feature: Basic operations
 	Examples:
 	  | num1 | num2 | pics |
 	  |  2   | 3    | 5    |
+
+  @dev
+  Scenario Outline: Multiple run
+	Given there is directory with <num1> picture files with landmarks
+	And there is directory with <num2> picture files without landmarks
+	When user runs program
+	And program found <num1> landmarks
+	And program found <pics> picture files
+	And user runs program
+	Then program found <num1> landmarks
+	And program found <pics> picture files
+
+
+	Examples:
+	  | num1 | num2 | pics |
+	  |  2   | 3    | 5    |

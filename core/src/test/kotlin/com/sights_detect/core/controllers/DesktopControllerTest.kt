@@ -40,6 +40,9 @@ class DesktopControllerTest {
 	@BeforeEach
 	fun setUp() {
 		try {
+			if (File(DetectionsStorage.DEFAULT_FILE_NAME).exists())
+				File(DetectionsStorage.DEFAULT_FILE_NAME).delete()
+
 			rootPath = createTempDir("tests").absolutePath
 		} catch (e: IOException) {
 			fail("Cant't create temp dir: " + e.message)
@@ -372,6 +375,7 @@ class DesktopControllerTest {
 				while (controller.detections.size != picsNum + errsNum) sleep(1000)
 				val statistics = controller.getStatistics()
 				Assertions.assertEquals(errsNum, statistics.getErrors().size, "Invalid errors number")
+				Assertions.assertEquals("[File: bla-bla2; Error: Error2, File: bla-bla1; Error: Error1]", statistics.getErrors().toString(), "Invalid errors texts")
 			}
 		} catch (e: Exception) {
 			fail("The test aborted: $e")

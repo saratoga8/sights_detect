@@ -1,14 +1,16 @@
 import com.github.tomakehurst.wiremock.junit.WireMockRule
+import com.sights_detect.core.detections.DetectionsStorage
 import io.cucumber.junit.Cucumber
 import io.cucumber.junit.CucumberOptions
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.runner.RunWith
+import java.io.File
 
 
 @RunWith(Cucumber::class)
 @CucumberOptions(
-		features = ["src/test/kotlin/basic.feature"], strict = true, plugin = ["pretty", "html:target/cucumber.html"]
+		features = ["src/test/kotlin/basic.feature"], strict = true, plugin = ["pretty", "html:target/cucumber.html"], tags = "@dev"
 )
 class RunBasicOpsTest {
 
@@ -23,6 +25,9 @@ class RunBasicOpsTest {
 		@JvmStatic
 		fun startServer() {
 			wireMockRule.resetAll()
+
+			if (File(DetectionsStorage.DEFAULT_FILE_NAME).exists())
+				File(DetectionsStorage.DEFAULT_FILE_NAME).delete()
 		}
 
 //		@AfterClass

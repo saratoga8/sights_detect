@@ -34,11 +34,14 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 		while (seekers.isNotEmpty()) {
 			seekers.removeAll { it.isStopped() }
 		}
+		saveDetections()
 	}
 
 	suspend fun start() {
+		loadDetections()
 		detectNewPics()
 		detectObjects()
+		saveDetections()
 	}
 
 	protected suspend fun detectObjects() {
