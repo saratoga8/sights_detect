@@ -95,7 +95,7 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 
 	protected fun saveDetections() {
 		val selectedDetections = detections.filterValues { it.state != Detections.PROCESSING }
-		storage.save(Hashtable<String, Detection>(selectedDetections), type)
+		storage.save(Hashtable(selectedDetections), type)
 	}
 
 	protected fun loadDetections() {

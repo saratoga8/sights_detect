@@ -35,6 +35,13 @@ class DesktopControllerTest {
 			properties.load(FileInputStream(url.path))
 //			properties.load(FileInputStream("/home/saratoga/progs/SightsDetect/core/src/test/resources/google.properties"))
 		}
+
+		@AfterAll
+		@JvmStatic
+		internal fun afterAll() {
+			if (File(DetectionsStorage.DEFAULT_FILE_NAME).exists())
+				File(DetectionsStorage.DEFAULT_FILE_NAME).delete()
+		}
 	}
 
 	@BeforeEach
@@ -54,6 +61,7 @@ class DesktopControllerTest {
 		File(rootPath).walk().forEach { it.deleteRecursively() }
 		Assertions.assertFalse(File(rootPath).exists(), "Temp directory $rootPath still exists")
 	}
+
 
 	@Test
 	@DisplayName("No sub-dirs")
