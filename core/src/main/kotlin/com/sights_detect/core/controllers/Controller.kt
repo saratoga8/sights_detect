@@ -23,6 +23,9 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 	protected abstract val properties: Properties
 	private val type: Type = object : TypeToken<Hashtable<String, Detection>>() {}.type
 
+	@get:Synchronized @set:Synchronized
+	var stopped = false
+
 	internal val seekers: MutableList<Seeker<Detection>> = mutableListOf()
 
 	fun getStatistics(): Statistics = StatisticsData(detections.values.toList())
@@ -35,6 +38,7 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 			seekers.removeAll { it.isStopped() }
 		}
 		saveDetections()
+		stopped = true
 	}
 
 	suspend fun start() {
@@ -42,6 +46,7 @@ abstract class Controller<in T>(private val paths: Iterable<T>): Logging {
 		detectNewPics()
 		detectObjects()
 		saveDetections()
+		stopped = true
 	}
 
 	protected suspend fun detectObjects() {

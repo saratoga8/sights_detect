@@ -10,3 +10,4 @@ gradle/
 gradlew
 local.properties
 /core/src/test/resources/google.properties
+ui/cli/target

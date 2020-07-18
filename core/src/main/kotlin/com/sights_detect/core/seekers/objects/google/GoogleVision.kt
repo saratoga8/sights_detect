@@ -1,5 +1,6 @@
 package com.sights_detect.core.seekers.objects.google
 
+import io.ktor.client.engine.ClientEngineClosedException
 import io.ktor.client.features.ClientRequestException
 import io.ktor.client.features.HttpRequestTimeoutException
 import io.ktor.network.sockets.ConnectTimeoutException
@@ -48,6 +49,9 @@ internal open class GoogleVision(properties: Properties): Logging {
 		}
 		catch (e: IllegalArgumentException) {
 			return exceptionResponse(e, "Cant build request with pic $imgPath:\n\t$e")
+		}
+		catch (e: ClientEngineClosedException) {
+			return exceptionResponse(e, "Cant get response:\n\t$e")
 		}
 	}
 

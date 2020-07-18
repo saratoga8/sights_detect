@@ -18,6 +18,7 @@ dependencies {
     compile project(":core")
     testImplementation group: 'io.cucumber', name: 'cucumber-java8', version: '6.1.1'
     testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '6.1.1'
+    testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
     compile "org.slf4j:slf4j-simple:1.7.30"
     testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.26.3"
 }

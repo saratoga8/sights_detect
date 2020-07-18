@@ -1,6 +1,9 @@
 import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.sights_detect.core.detections.DetectionsStorage
 import com.sights_detect.core.statistics.Statistics
 import io.cucumber.java8.En
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
 import org.junit.Assert
 import java.io.File
 import java.io.FileInputStream
@@ -24,6 +27,9 @@ class BasicSteps : En {
 	private val responseFileNames = mapOf(ImgType.WITH_LANDMARK to "landmarks_response.json", ImgType.NO_LANDMARK to "no_landmarks_response.json")
 
 	init {
+		Before() { _ -> delStorage() }
+		After() { _ -> delStorage() }
+
 		Given("^there is directory with (\\d+) picture files (without|with) landmarks$") { num: Int, landmark: String ->
 			if (tmpDir == null) {
 				tmpDir = createTempDir("tests")
@@ -42,7 +48,7 @@ class BasicSteps : En {
 			}
 		}
 
-		When("user runs program") {
+		When("^user runs program$") {
 			val propertiesPath = getResourceURL("google.properties").path
 			val properties = Properties().also { it.load(FileInputStream(propertiesPath)) }
 
@@ -68,7 +74,26 @@ class BasicSteps : En {
 						foundLandmarks.map { it.foundDetection.descriptions.last() }.contains(expectedDescription))
 			}
 		}
+
+		Then("^program found (less|more) than (\\d+) landmarks$") { sign: String, num: Int ->
+			val foundLandmarks = statistics!!.getFoundObjects()
+			Assert.assertFalse("Nothing found", foundLandmarks.isEmpty())
+			assertThat(foundLandmarks.size, Matchers.lessThan(num))
+		}
+
+		When("^user runs program with slow connection and timeout$") {
+			val propertiesPath = getResourceURL("google.properties").path
+			val properties = Properties().also { it.load(FileInputStream(propertiesPath)) }
+
+			setStubbing(withLandmarksPicsNum, properties, true, 2)
+			setStubbing(noLandmarksPicsNum, properties, false, 2)
+
+			stats = runApp(arrayOf(tmpDir!!.absolutePath, propertiesPath), 4)
+			Assert.assertNotNull("There is no stats, the result of program run", stats)
+			statistics = stats
+		}
 	}
+
 
 	private fun getResourceURL(fileName: String): URL {
 		val url = javaClass.classLoader.getResource(fileName)
@@ -81,7 +106,7 @@ class BasicSteps : En {
 		return Base64.getEncoder().encodeToString(download(imgType).readBytes())
 	}
 
-	private fun setStubbing(times: Int, properties: Properties, withLandmarks: Boolean) {
+	private fun setStubbing(times: Int, properties: Properties, withLandmarks: Boolean, delaySec: Int = 0) {
 		if (times == 0) return
 		val path = properties.getProperty("path")
 		val key = properties.getProperty("key")
@@ -98,6 +123,7 @@ class BasicSteps : En {
 				.withRequestBody(equalToJson(requestBodyStr))
 				.willReturn(aResponse()
 						.withStatus(200)
+						.withFixedDelay(delaySec * 1000)
 						.withHeader("Content-Type", "application/json")
 						.withBody(responseBodyStr)))
 	}
@@ -113,5 +139,10 @@ class BasicSteps : En {
 		fileOutputStream.channel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE)
 		Assert.assertTrue("Can't download the file $url", file.exists() && file.length() > 0)
 		return file
+	}
+
+	private fun delStorage() {
+		if (File(DetectionsStorage.DEFAULT_FILE_NAME).exists())
+			File(DetectionsStorage.DEFAULT_FILE_NAME).delete()
 	}
 }

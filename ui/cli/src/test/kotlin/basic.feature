@@ -32,7 +32,6 @@ Feature: Basic operations
 	  | num1 | num2 | pics |
 	  |  2   | 3    | 5    |
 
-  @dev
   Scenario Outline: Multiple run
 	Given there is directory with <num1> picture files with landmarks
 	And there is directory with <num2> picture files without landmarks
@@ -43,7 +42,19 @@ Feature: Basic operations
 	Then program found <num1> landmarks
 	And program found <pics> picture files
 
-
 	Examples:
 	  | num1 | num2 | pics |
 	  |  2   | 3    | 5    |
+
+
+  Scenario Outline: Stopping and restarting
+	Given there is directory with <num1> picture files with landmarks
+	And there is directory with <num2> picture files without landmarks
+	When user runs program with slow connection and timeout
+	And program found less than <num1> landmarks
+	And user runs program
+	Then program found <num1> landmarks
+
+	Examples:
+	  | num1 | num2 |
+	  |  6   | 3    |
