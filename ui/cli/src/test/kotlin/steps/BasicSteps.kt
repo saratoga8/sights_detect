@@ -1,10 +1,15 @@
+package steps
+
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.sights_detect.core.detections.DetectionsStorage
 import com.sights_detect.core.statistics.Statistics
 import io.cucumber.java8.En
+import main
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.Assert
+import runApp
+import stats
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
