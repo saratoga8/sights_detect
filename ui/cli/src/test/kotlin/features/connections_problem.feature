@@ -1,3 +1,4 @@
+@wip
 Feature: User runs program and there are connection problems to Visual Detection service
 
   Scenario: Slow connection to Visual Detection service

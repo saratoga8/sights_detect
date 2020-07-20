@@ -8,7 +8,7 @@ import org.junit.runner.RunWith
 
 @RunWith(Cucumber::class)
 @CucumberOptions(
-		features = ["src/test/kotlin/features/basic.feature"], strict = true, plugin = ["pretty", "html:target/cucumber.html"]
+		features = ["src/test/kotlin/features/"], strict = true, plugin = ["pretty", "html:target/cucumber.html"], tags = "@dev"
 )
 class RunBasicOpsTest {
 

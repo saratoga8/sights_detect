@@ -31,9 +31,13 @@ class BasicSteps : En {
 	private val fileNames = mapOf(ImgType.WITH_LANDMARK to "with_landmark.jpg", ImgType.NO_LANDMARK to "no_landmark.jpg")
 	private val responseFileNames = mapOf(ImgType.WITH_LANDMARK to "landmarks_response.json", ImgType.NO_LANDMARK to "no_landmarks_response.json")
 
+	private	var propertiesPath = getResourceURL("google.properties").path
+	private var properties = Properties().also { it.load(FileInputStream(propertiesPath)) }
+
 	init {
 		Before() { _ -> delStorage() }
 		After() { _ -> delStorage() }
+
 
 		Given("^there is directory with (\\d+) picture files (without|with) landmarks$") { num: Int, landmark: String ->
 			if (tmpDir == null) {
@@ -54,9 +58,6 @@ class BasicSteps : En {
 		}
 
 		When("^user runs program$") {
-			val propertiesPath = getResourceURL("google.properties").path
-			val properties = Properties().also { it.load(FileInputStream(propertiesPath)) }
-
 			setStubbing(withLandmarksPicsNum, properties, true)
 			setStubbing(noLandmarksPicsNum, properties, false)
 
@@ -87,15 +88,22 @@ class BasicSteps : En {
 		}
 
 		When("^user runs program with slow connection and timeout$") {
-			val propertiesPath = getResourceURL("google.properties").path
-			val properties = Properties().also { it.load(FileInputStream(propertiesPath)) }
-
 			setStubbing(withLandmarksPicsNum, properties, true, 2)
 			setStubbing(noLandmarksPicsNum, properties, false, 2)
 
 			stats = runApp(arrayOf(tmpDir!!.absolutePath, propertiesPath), 4)
 			Assert.assertNotNull("There is no stats, the result of program run", stats)
 			statistics = stats
+		}
+
+		And("user gets {int} error") { num: Int ->
+			Assert.assertNotNull("There is no stats, the result of program run", statistics)
+			Assert.assertEquals("Invalid number of found errors", num, stats!!.getErrors().size)
+		}
+
+		And("there is invalid properties file") {
+			propertiesPath = getResourceURL("invalid.properties").path
+			properties = Properties().also { it.load(FileInputStream(propertiesPath)) }
 		}
 	}
 

@@ -1,3 +1,4 @@
+@dev
 Feature: user use invalid data and run the program
 
   Scenario: Invalid properties file
@@ -5,7 +6,7 @@ Feature: user use invalid data and run the program
 	And there is directory with 2 picture files without landmarks
 	And there is invalid properties file
 	When user runs program
-	Then program found 0 landmarks
+	Then program found 5 picture files
 	And program found 0 landmarks
 	And user gets 1 error
 
